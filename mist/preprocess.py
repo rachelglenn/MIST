@@ -455,7 +455,7 @@ class Preprocess(object):
         with open(inferred_params_json_file, 'w') as outfile: 
             json.dump(self.inferred_params, outfile)
         
-        print('Preprocessing dataset...')
+        print('Preprocessing dataset...', inferred_params_json_file)
         for i in trange(len(self.df)):
             patient = self.df.iloc[i].to_dict()
             patient_tfr_name = '{}.tfrecord'.format(patient['id'])

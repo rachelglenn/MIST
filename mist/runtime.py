@@ -35,7 +35,8 @@ warnings.simplefilter(action = 'ignore',
 import pdb
 
 from tensorflow.keras.callbacks import TensorBoard
-from anylsis import CustomCallback
+
+from mist.analysis import CustomCallback
 
 import tensorflow as tf
 from tensorflow.keras.callbacks import LearningRateScheduler # This function keeps the learning rate at 0.001 for the first ten epochs
@@ -50,7 +51,7 @@ class RunTime(object):
         # Get loss function and preprocessor
         self.loss = Loss(json_file)
         self.preprocess = Preprocess(json_file)
-        self.metrics = Metrics()
+        
 
         self.n_channels = len(self.params['images'])
         self.n_classes = len(self.params['labels'])
@@ -215,23 +216,6 @@ class RunTime(object):
                     
         return image_patch, mask_patch
     
-    def get_gaussian(self, sigma_scale = 0.125):
-        tmp = np.zeros(self.inferred_params['patch_size'])
-        center_coords = [i // 2 for i in self.inferred_params['patch_size']]
-        sigmas = [i * sigma_scale for i in self.inferred_params['patch_size']]
-        tmp[tuple(center_coords)] = 1
-        gaussian_importance_map = gaussian_filter(tmp, sigmas, 0, mode='constant', cval=0)
-        gaussian_importance_map = gaussian_importance_map / np.max(gaussian_importance_map) * 1
-        gaussian_importance_map = gaussian_importance_map.astype(np.float32)
-
-        # gaussian_importance_map cannot be 0, otherwise we may end up with nans!
-        gaussian_importance_map[gaussian_importance_map == 0] = np.min(
-            gaussian_importance_map[gaussian_importance_map != 0])
-        
-        gaussian_importance_map = gaussian_importance_map.reshape((*gaussian_importance_map.shape, 1))
-        gaussian_importance_map = np.repeat(gaussian_importance_map, self.n_classes, axis = -1)
-
-        return gaussian_importance_map
  
 
     def testSet(self, tfrecords, split):
@@ -369,7 +353,16 @@ class RunTime(object):
                 tensorboard = TensorBoard(log_dir='./log/%d/' % idfold, histogram_freq=0, write_graph=True, write_images=False)
                 
                 lossDice = (self.params['loss'] == 'dice')
-                
+                #if 'use_nz_mask' not in self.inferred_params.keys():
+                #    self.inferred_params['use_nz_mask'] = False
+                # if 'target_spacing' not in self.inferred_params.keys():
+                #     self.inferred_params['target_spacing'] = 1.0
+                # if 'min_component_size' not in self.inferred_params.keys():
+                #     #from mist.preprocess import Preprocess
+                    
+                #     self.inferred_params['min_component_size'] = self.preprocess.get_min_component_size()
+
+
                 # Train model
                 training_history = model.fit(train_ds, 
                           epochs = 1, 
@@ -378,7 +371,13 @@ class RunTime(object):
                           #validation_data = validationGenerator ,
                           #validation_steps = (len(val)) // batchSize,
                           callbacks = [tensorboard, 
-                                  CustomCallback(val_ds, 
+                                  CustomCallback(
+                                      self.params['labels'],
+                                       self.inferred_params['use_nz_mask'], 
+                                       self.inferred_params['target_spacing'], 
+                                       self.inferred_params['min_component_size'], 
+                                       self.params['prediction_dir'],
+                                      val_ds, 
                                   best_model_name, 
                                   self.inferred_params['patch_size'], 
                                       self.n_classes, 

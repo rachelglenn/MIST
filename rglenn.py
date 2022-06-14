@@ -112,8 +112,6 @@ with open(json_file, 'w') as outfile:
 # 
 # Once you have your input JSON file, simply run command in the following cell to initiate the MIST training and inference pipeline. Enjoy!
 
-# In[6]:
-
 
 # Create runtime instance
 train = RunTime(json_file)
