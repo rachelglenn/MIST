@@ -4,6 +4,11 @@ import numpy as np
 import tensorflow as tf
 import tensorflow.keras.backend as K
 
+def merge_two_dicts(x, y):
+    z = x.copy()   # start with keys and values of x
+    z.update(y)    # modifies z with keys and values of y
+    return z
+
 def auto_select_gpu():
     pynvml.nvmlInit()
     deviceCount = pynvml.nvmlDeviceGetCount()

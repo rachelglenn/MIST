@@ -8,6 +8,7 @@ import scipy
 import pandas as pd
 import numpy as np
 from tqdm import trange
+from mist.kFoldMetrics import kFoldMetrics
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import KFold
 from scipy.ndimage.filters import gaussian_filter
@@ -20,11 +21,11 @@ from tensorflow.keras.models import Model, load_model
 from tensorflow.keras.callbacks import ModelCheckpoint
 import tensorflow.keras.backend as K
 
-from model import *
-from loss import *
-from preprocess import *
-from metrics import *
-from utils import *
+from mist.model import *
+from mist.loss import *
+from mist.preprocess import *
+from mist.metrics import *
+from mist.utils import *
 
 import warnings
 warnings.simplefilter(action = 'ignore', 
@@ -32,11 +33,11 @@ warnings.simplefilter(action = 'ignore',
 
 warnings.simplefilter(action = 'ignore', 
                       category = FutureWarning)
-import pdb
+
 
 from tensorflow.keras.callbacks import TensorBoard
 
-from mist.analysis import CustomCallback
+from mist.callback import CustomCallback
 
 import tensorflow as tf
 from tensorflow.keras.callbacks import LearningRateScheduler # This function keeps the learning rate at 0.001 for the first ten epochs
@@ -56,8 +57,8 @@ class RunTime(object):
         self.n_channels = len(self.params['images'])
         self.n_classes = len(self.params['labels'])
         self.n_folds = 5
-        self.epochs =  2 #250
-        self.steps_per_epoch = 3 #250
+        self.epochs =  250
+        self.steps_per_epoch = 250
 
     def decode(self, serialized_example):
         features_dict = {'image': tf.io.VarLenFeature(tf.float32),
@@ -109,7 +110,7 @@ class RunTime(object):
         # Extract image/mask pair from sparse tensors
         image = tf.sparse.to_dense(features['image'])
         image = tf.reshape(image, tf.concat([features['dims'], features['num_channels']], axis = -1))
-        print("Image Size:", image.shape)
+        # print("Image Size:", image.shape)
 
         mask = tf.sparse.to_dense(features['mask'])
         mask = tf.reshape(mask, tf.concat([features['dims'], features['num_classes']], axis = -1))
@@ -143,10 +144,10 @@ class RunTime(object):
         point = label_points[..., point_idx]
             
         # Extract random patch from image/mask
-        patch_radius = [patch_dim // 2 for patch_dim in self.inferred_params['patch_size']]
-        padding_x = self.inferred_params['patch_size'][0] - (tf.reduce_min([dims[0], point[0] + patch_radius[0]]) - tf.reduce_max([0, point[0] - patch_radius[0]]))
-        padding_y = self.inferred_params['patch_size'][1] - (tf.reduce_min([dims[1], point[1] + patch_radius[1]]) - tf.reduce_max([0, point[1] - patch_radius[1]]))
-        padding_z = self.inferred_params['patch_size'][2] - (tf.reduce_min([dims[2], point[2] + patch_radius[2]]) - tf.reduce_max([0, point[2] - patch_radius[2]]))
+        patch_radius = [patch_dim // 2 for patch_dim in self.params['patch_size']]
+        padding_x = self.params['patch_size'][0] - (tf.reduce_min([dims[0], point[0] + patch_radius[0]]) - tf.reduce_max([0, point[0] - patch_radius[0]]))
+        padding_y = self.params['patch_size'][1] - (tf.reduce_min([dims[1], point[1] + patch_radius[1]]) - tf.reduce_max([0, point[1] - patch_radius[1]]))
+        padding_z = self.params['patch_size'][2] - (tf.reduce_min([dims[2], point[2] + patch_radius[2]]) - tf.reduce_max([0, point[2] - patch_radius[2]]))
         
         zero = tf.constant(0, tf.int64)
         two = tf.constant(2, tf.int64)
@@ -256,8 +257,6 @@ class RunTime(object):
 
             
     def alpha_schedule(self, step): 
-        print("check",float(self.epochs))
-        print("check",float(step))
         #TODO: Make a step-function scheduler and an adaptive option
         return (-1. / float(self.epochs)) * float(step) + 1
      
@@ -300,6 +299,10 @@ class RunTime(object):
             strategy = tf.distribute.MirroredStrategy()
         else:
             strategy = None
+        self.params['learning_rate'] = 0.001
+        
+        k_metrics = kFoldMetrics(self.params)
+
 
         ### Start training loop ###
         split_cnt = 1
@@ -323,7 +326,8 @@ class RunTime(object):
 
             current_model_name = os.path.join(self.params['model_dir'], '{}_current_model_split_{}'.format(self.params['base_model_name'], fold))
             best_model_name = os.path.join(self.params['model_dir'], '{}_best_model_split_{}'.format(self.params['base_model_name'], fold))
-
+           
+            
             if cache_size < len(train_tfr_list):
                 # Initialize training cache and pool in first epoch
                 train_cache = random.sample(train_tfr_list, cache_size)
@@ -333,7 +337,7 @@ class RunTime(object):
             else:
                 train_cache = train_tfr_list
 
-            learning_rate = 0.001
+            self.params['learning_rate'] = 0.001
             for i in range(self.epochs):
                 print('Epoch {}/{}'.format(i + 1, self.epochs))
                 
@@ -342,52 +346,30 @@ class RunTime(object):
                 train_ds, val_ds = self.trainingValidationSet(train_cache, cache_size, crop_fn, val_tfr_list)
 
                 # Set up optimizer and compile model
-                opt = tf.optimizers.Adam(learning_rate = learning_rate)
+                opt = tf.optimizers.Adam(learning_rate = self.params['learning_rate'])
                 # alpha = self.alpha_schedule(i)
                 model = self.setupModel(i, kfold, depth, opt, current_model_name, strategy)
                 
 
                 # Setup tensorboard
                 idfold = split_cnt
-                os.system('mkdir -p log/%d/' % idfold)
-                tensorboard = TensorBoard(log_dir='./log/%d/' % idfold, histogram_freq=0, write_graph=True, write_images=False)
+                #os.system('mkdir -p log/%d/' % idfold)
+                #tensorboard = TensorBoard(log_dir='./log/%d/' % idfold, histogram_freq=0, write_graph=True, write_images=False)
                 
-                lossDice = (self.params['loss'] == 'dice')
-                #if 'use_nz_mask' not in self.inferred_params.keys():
-                #    self.inferred_params['use_nz_mask'] = False
-                # if 'target_spacing' not in self.inferred_params.keys():
-                #     self.inferred_params['target_spacing'] = 1.0
-                # if 'min_component_size' not in self.inferred_params.keys():
-                #     #from mist.preprocess import Preprocess
-                    
-                #     self.inferred_params['min_component_size'] = self.preprocess.get_min_component_size()
-
-
+               
                 # Train model
                 training_history = model.fit(train_ds, 
                           epochs = 1, 
-                          steps_per_epoch =  self.steps_per_epoch,
+                          steps_per_epoch =  self.steps_per_epoch),
                           #steps_per_epoch = (len(train_cache)) // batchSize,
                           #validation_data = validationGenerator ,
                           #validation_steps = (len(val)) // batchSize,
-                          callbacks = [tensorboard, 
-                                  CustomCallback(
-                                      self.params['labels'],
-                                       self.inferred_params['use_nz_mask'], 
-                                       self.inferred_params['target_spacing'], 
-                                       self.inferred_params['min_component_size'], 
-                                       self.params['prediction_dir'],
-                                      val_ds, 
-                                  best_model_name, 
-                                  self.inferred_params['patch_size'], 
-                                      self.n_classes, 
-                                      self.loss, 
-                                      test_df,
-                                      test_ds,
-                                      self.params['final_classes'],
-                                      lossDice
-                                      )])
+                          #callbacks = [tensorboard]
+                           #       CustomCallback(self.params, k_metrics, val_ds, self.loss)])
                 # Save model for next epoch
+
+                self.params['learning_rate'] = k_metrics.on_epoch_end(model, val_ds, self.loss, best_model_name)
+
                 model.save(current_model_name)
                 
                 if cache_size < len(train_tfr_list):
@@ -409,13 +391,21 @@ class RunTime(object):
 
 
 
-                del train_ds, val_ds, model
+                del train_ds, val_ds
                 K.clear_session()
                 gc.collect()
 
                 ### End of epoch ###
-
+            k_metrics.on_kFold_end( model, test_df, test_ds)
             ### End of training ###
+        resultsPath = '/rsrch1/ip/rglenn1/data/'
+        # model_name = self.params['best_model_name']
+        best_model_name = os.path.split(best_model_name)[1]
+
+
+        model_name = os.path.splitext(best_model_name)[0]
+        k_metrics.on_training_end(resultsPath, model_name)
+        del model
         K.clear_session()
         gc.collect()
 
@@ -424,36 +414,24 @@ class RunTime(object):
     def inferredParams(self ):
         #Get inferred_params
         filename = self.params['inferred_params']
-        print("File size:", self.params['inferred_params'])
-        if os.stat(filename).st_size == 0:
-            self.inferred_params = {}
-        else:
-            with open(filename, 'r') as file:
-                self.inferred_params = json.load(file)
+            
+        with open(filename, 'r') as file:
+            inferred_params = json.load(file)
        
         # Setup Parameters
         loss_type = self.params['loss']
-        #print('median_image_size', type(self.inferred_params['median_image_size']))
-        
         labels = self.params['labels']
-        # TO DO
-        #print("inferred_params", labels)
-        #if self.inferred_params.has_key('patchsize'):
-        #    #['patch_size'] is not None:
-        #    patch_size = self.inferred_params['patch_size']
-        #inferred_params = self.params['inferred_params']
         modelname = self.params['model']
         pocket = self.params['pocket']
         df = self.df 
         n_channels = self.n_channels
         n_classes = self.n_classes
         
-        
 
         #TODO understand how to get the median_image_size
         
         if 'median_image_size' in self.params.keys():
-            median_image_size = self.inferred_params['median_image_size']
+            median_image_size = inferred_params['median_image_size']
             available_mem = psutil.virtual_memory().available
             if (loss_type == 'dice') or (loss_type == 'gdl'):
                 image_buffer_size = 4 * (np.prod(median_image_size) * (n_channels + len(labels)))
@@ -463,7 +441,8 @@ class RunTime(object):
             # Set cache size so that we do not exceed 2.5% of available memory
             cache_size = int(np.ceil((0.05 * available_mem) / image_buffer_size))
         else:
-            #?????
+            
+            print("Error: Median_image_size not found rerun with preprocessing")
             cache_size = 500*100
             median_image_size = [134, 170, 137]
            
@@ -521,12 +500,12 @@ class RunTime(object):
             K.clear_session()
             gc.collect()
             
-        self.inferred_params['patch_size'] = patch_size
+        inferred_params['patch_size'] = patch_size
 
         # Save inferred parameters as json file
         inferred_params_json_file = os.path.abspath(self.params['inferred_params'])
         with open(inferred_params_json_file, 'w') as outfile:
-            json.dump(self.inferred_params, outfile)
+            json.dump(inferred_params, outfile)
 
         # Default case if folds are not specified by user
         if not('folds' in self.params.keys()):
@@ -535,6 +514,10 @@ class RunTime(object):
         # Convert folds input to list if it is not already one
         if not(isinstance(self.params['folds'], list)):
             self.params['folds'] = [int(self.params['folds'])]
+
+        #Merge inferred parameters with paramters
+        self.params = merge_two_dicts(self.params, inferred_params)
+
         
         return depth, cache_size
 
@@ -545,7 +528,7 @@ class RunTime(object):
                 with strategy.scope():
                     # Get model for this fold
                     model = get_model2(self.params['model'], 
-                                        patch_size = tuple(self.inferred_params['patch_size']), 
+                                        patch_size = tuple(self.params['patch_size']), 
                                         num_channels = self.n_channels,
                                         num_class = self.n_classes, 
                                         init_filters = 32, 
@@ -557,7 +540,7 @@ class RunTime(object):
             else:
                 # Get model for this fold
                 model = get_model2(self.params['model'], 
-                                    patch_size = tuple(self.inferred_params['patch_size']), 
+                                    patch_size = tuple(self.params['patch_size']), 
                                     num_channels = self.n_channels,
                                     num_class = self.n_classes, 
                                     init_filters = 32, 
@@ -641,7 +624,7 @@ class RunTime(object):
 
 
     def run(self, run_preprocess = True):
-        print("Loss:", self.params['loss'])
+        #print("Loss:", self.params['loss'])
         # Check if necessary directories exist, and creat them
         self.setupDir()
 
@@ -664,9 +647,9 @@ class RunTime(object):
         else:
             self.setupGPU(None)
 
-
         # Run training pipeline
         self.train()
+
         
 
     def setupDir(self):
