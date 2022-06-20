@@ -8,6 +8,10 @@ import scipy
 import pandas as pd
 import numpy as np
 from tqdm import trange
+import signal
+import time
+import readchar
+
 from mist.kFoldMetrics import kFoldMetrics
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import KFold
@@ -20,12 +24,17 @@ from tensorflow.keras import layers, metrics, mixed_precision
 from tensorflow.keras.models import Model, load_model
 from tensorflow.keras.callbacks import ModelCheckpoint
 import tensorflow.keras.backend as K
+from tensorflow.keras.callbacks import TensorBoard
+from tensorflow.keras.callbacks import LearningRateScheduler # This function keeps the learning rate at 0.001 for the first ten epochs
+
 
 from mist.model import *
 from mist.loss import *
 from mist.preprocess import *
 from mist.metrics import *
 from mist.utils import *
+from mist.kFoldCallback import *
+
 
 import warnings
 warnings.simplefilter(action = 'ignore', 
@@ -35,12 +44,7 @@ warnings.simplefilter(action = 'ignore',
                       category = FutureWarning)
 
 
-from tensorflow.keras.callbacks import TensorBoard
 
-from mist.callback import CustomCallback
-
-import tensorflow as tf
-from tensorflow.keras.callbacks import LearningRateScheduler # This function keeps the learning rate at 0.001 for the first ten epochs
 
 class RunTime(object):
     
@@ -52,13 +56,27 @@ class RunTime(object):
         # Get loss function and preprocessor
         self.loss = Loss(json_file)
         self.preprocess = Preprocess(json_file)
-        
 
         self.n_channels = len(self.params['images'])
         self.n_classes = len(self.params['labels'])
         self.n_folds = 5
         self.epochs =  250
         self.steps_per_epoch = 250
+        self.k_metrics = None
+
+
+    def handler(self, signum, frame):
+        msg = "Ctrl-c was pressed. Do you want to save the progress? y/n "
+        print(msg, end="", flush=True)
+        res = readchar.readchar()
+        if res == 'y':
+            print("")
+            if self.k_metrics != None:
+
+                self.k_metrics.on_training_end()
+            exit(1)
+        else:
+            exit(1)
 
     def decode(self, serialized_example):
         features_dict = {'image': tf.io.VarLenFeature(tf.float32),
@@ -216,9 +234,8 @@ class RunTime(object):
             image_patch = tf.numpy_function(scipy.ndimage.gaussian_filter, [image_patch, blur_level], tf.float32)
                     
         return image_patch, mask_patch
-    
  
-
+    @timeit
     def testSet(self, tfrecords, split):
         test_tfr_list = [tfrecords[idx] for idx in split]
         test_df_ids = [self.df.iloc[idx]['id'] for idx in split]
@@ -252,14 +269,13 @@ class RunTime(object):
                                             compression_type = 'GZIP', 
                                             num_parallel_reads = tf.data.experimental.AUTOTUNE)
         val_ds = val_ds.map(self.decode_val, num_parallel_calls = tf.data.experimental.AUTOTUNE)
-
         return train_ds, val_ds
 
             
     def alpha_schedule(self, step): 
         #TODO: Make a step-function scheduler and an adaptive option
         return (-1. / float(self.epochs)) * float(step) + 1
-     
+    
     def train(self):
 
         # Get folds for k-fold cross validation
@@ -299,10 +315,9 @@ class RunTime(object):
             strategy = tf.distribute.MirroredStrategy()
         else:
             strategy = None
-        self.params['learning_rate'] = 0.001
         
-        k_metrics = kFoldMetrics(self.params)
-
+        # Setup Model metrics for kFold training
+        self.k_metrics = kFoldMetrics(self.params)
 
         ### Start training loop ###
         split_cnt = 1
@@ -323,10 +338,6 @@ class RunTime(object):
                                                                   train_tfr_list,
                                                                   test_size = test_size,
                                                                   random_state = 42)
-
-            current_model_name = os.path.join(self.params['model_dir'], '{}_current_model_split_{}'.format(self.params['base_model_name'], fold))
-            best_model_name = os.path.join(self.params['model_dir'], '{}_best_model_split_{}'.format(self.params['base_model_name'], fold))
-           
             
             if cache_size < len(train_tfr_list):
                 # Initialize training cache and pool in first epoch
@@ -337,18 +348,16 @@ class RunTime(object):
             else:
                 train_cache = train_tfr_list
 
-            self.params['learning_rate'] = 0.001
+            
             for i in range(self.epochs):
                 print('Epoch {}/{}'.format(i + 1, self.epochs))
                 
                 
                 # Prepare training and validation set
                 train_ds, val_ds = self.trainingValidationSet(train_cache, cache_size, crop_fn, val_tfr_list)
-
-                # Set up optimizer and compile model
-                opt = tf.optimizers.Adam(learning_rate = self.params['learning_rate'])
-                # alpha = self.alpha_schedule(i)
-                model = self.setupModel(i, kfold, depth, opt, current_model_name, strategy)
+               
+                learningrate = self.k_metrics.learningrate
+                model = self.setupModel( i, learningrate, depth, strategy)   
                 
 
                 # Setup tensorboard
@@ -360,19 +369,21 @@ class RunTime(object):
                 # Train model
                 training_history = model.fit(train_ds, 
                           epochs = 1, 
-                          steps_per_epoch =  self.steps_per_epoch),
-                          #steps_per_epoch = (len(train_cache)) // batchSize,
+                          #steps_per_epoch =  self.steps_per_epoch),
+                            steps_per_epoch =  len(train_cache))
+                          #steps_per_epoch = (len(train_cache)) // batchSize)
                           #validation_data = validationGenerator ,
                           #validation_steps = (len(val)) // batchSize,
-                          #callbacks = [tensorboard]
-                           #       CustomCallback(self.params, k_metrics, val_ds, self.loss)])
+                          #callbacks = [
+                          #kFoldCallback(self.params, test_ds, test_df, val_ds, self.loss, self.epochs)])
                 # Save model for next epoch
 
-                self.params['learning_rate'] = k_metrics.on_epoch_end(model, val_ds, self.loss, best_model_name)
+                self.k_metrics.on_epoch_end(model, val_ds, self.loss)
 
-                model.save(current_model_name)
+                # model.save(self.params['current_model_name'])
                 
                 if cache_size < len(train_tfr_list):
+                    print("Change patient list...")
                     cache_replacement_rate = 0.2
                     # Pick n_replacement new patients from pool and remove the same number from the current cache
                     n_replacements = int(np.ceil(cache_size * cache_replacement_rate))
@@ -396,15 +407,10 @@ class RunTime(object):
                 gc.collect()
 
                 ### End of epoch ###
-            k_metrics.on_kFold_end( model, test_df, test_ds)
-            ### End of training ###
-        resultsPath = '/rsrch1/ip/rglenn1/data/'
-        # model_name = self.params['best_model_name']
-        best_model_name = os.path.split(best_model_name)[1]
-
-
-        model_name = os.path.splitext(best_model_name)[0]
-        k_metrics.on_training_end(resultsPath, model_name)
+            self.k_metrics.on_kFold_end( model, test_df, test_ds)
+        ### End of training ###
+        
+        #self.k_metrics.on_training_end()
         del model
         K.clear_session()
         gc.collect()
@@ -501,6 +507,8 @@ class RunTime(object):
             gc.collect()
             
         inferred_params['patch_size'] = patch_size
+        
+
 
         # Save inferred parameters as json file
         inferred_params_json_file = os.path.abspath(self.params['inferred_params'])
@@ -517,13 +525,34 @@ class RunTime(object):
 
         #Merge inferred parameters with paramters
         self.params = merge_two_dicts(self.params, inferred_params)
+        self.params['learning_rate'] = 0.001
 
+        self.params['current_model_name'] =  os.path.join(self.params['model_dir'], '{}_current_model_split'.format(self.params['base_model_name']))
+        self.params['best_model_name'] = os.path.join(self.params['model_dir'], '{}_best_model_split'.format(self.params['base_model_name']))
+           
         
         return depth, cache_size
 
-    def setupModel(self, epoch, kfold, depth, opt, current_model_name, strategy):
-        alpha = self.alpha_schedule(epoch)
-        if epoch == 0:
+    def setupModel(self, step, learning_rate, depth, strategy):
+        #epoch = 0 # doesn't matter for dice
+        #alpha = self.alpha_schedule()
+        #self.params['learning_rate'] = 0.001
+        alpha = self.alpha_schedule(step)
+        opt = tf.optimizers.Adam(learning_rate = learning_rate)
+        if os.path.exists(self.params['best_model_name']):
+            if self.multi_gpu and strategy != None:
+                with strategy.scope():
+                    # Reload model and resume training for later epochs
+                    model = load_model(self.params['best_model_name'], custom_objects = {'loss': self.loss.loss_wrapper(alpha)})
+                    # tf.config.optimizer.set_jit(True)
+                    model.compile(optimizer = opt, loss = [self.loss.loss_wrapper(alpha)])
+            else:
+                # Reload model and resume training for later epochs
+                model = load_model(self.params['best_model_name'], custom_objects = {'loss': self.loss.loss_wrapper(alpha)})
+                # tf.config.optimizer.set_jit(True)
+                model.compile(optimizer = opt, loss = [self.loss.loss_wrapper(alpha)])
+        else:
+            #if epoch == 0:
             if self.multi_gpu and strategy != None:
                 with strategy.scope():
                     # Get model for this fold
@@ -547,19 +576,6 @@ class RunTime(object):
                                     depth = depth, 
                                     pocket = self.params['pocket'], 
                                     json_file = self.json_file)
-                # tf.config.optimizer.set_jit(True)
-                model.compile(optimizer = opt, loss = [self.loss.loss_wrapper(alpha)])
-            
-        else:
-            if self.multi_gpu and strategy != None:
-                with strategy.scope():
-                    # Reload model and resume training for later epochs
-                    model = load_model(current_model_name, custom_objects = {'loss': self.loss.loss_wrapper(alpha)})
-                    # tf.config.optimizer.set_jit(True)
-                    model.compile(optimizer = opt, loss = [self.loss.loss_wrapper(alpha)])
-            else:
-                # Reload model and resume training for later epochs
-                model = load_model(current_model_name, custom_objects = {'loss': self.loss.loss_wrapper(alpha)})
                 # tf.config.optimizer.set_jit(True)
                 model.compile(optimizer = opt, loss = [self.loss.loss_wrapper(alpha)])
         return model
@@ -647,8 +663,15 @@ class RunTime(object):
         else:
             self.setupGPU(None)
 
-        # Run training pipeline
-        self.train()
+        # Setup Signal handler
+        signal.signal(signal.SIGINT, self.handler)
+        
+        while True:
+            # Run training pipeline
+            self.train()
+
+
+
 
         
 

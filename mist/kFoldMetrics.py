@@ -9,14 +9,14 @@ from scipy.ndimage.filters import gaussian_filter
 from metrics import *
 from datetime import datetime
 import tensorflow.keras.backend as K
-
+from mist.utils import timeit
 
 class kFoldMetrics(Metrics):
     def __init__(self, params):
         
         # Model parameters
         self.learningrate = params['learning_rate']
-        self.num_epochs = 1
+        self.num_epochs = 0
         self.n_classes = len(params['labels'])
         self.patch_size = params['patch_size']
         self.dice = params['loss']
@@ -26,9 +26,13 @@ class kFoldMetrics(Metrics):
         self.target_spacing = params['target_spacing']
         self.min_component_size = params['min_component_size']
         self.prediction_dir = params['prediction_dir']
-        self.results_csv = params['results_csv']
+        #self.results_csv = params['results_csv']
         self.labels = params['labels']
         self.final_classes = params['final_classes']
+        self.best_model_name = params['best_model_name']
+        self.current_model_name = params['current_model_name']
+        self.model_name = params['base_model_name']
+        self.resultsPath = params['results_path']
         print('final_classes', self.final_classes)
         # Initialize results dataframe
         metrics = ['dice', 'haus95', 'avg_surf']
@@ -52,26 +56,29 @@ class kFoldMetrics(Metrics):
         print(f'Training Started | {self.time_started}\n')
 
 
-    def on_training_end(self, resultsPath, model_name):
-
-        self.plot_model_performance(resultsPath, model_name)
-        
-        self.plotMetrics(resultsPath, model_name)
-
-        # Get final statistics
-        self.performanceMetrics(model_name, resultsPath)
-
+    def on_training_end(self):
         self.time_finished = datetime.now()
         train_duration = str(self.time_finished - self.time_started)
         print(f'\nTraining Finished | {self.time_finished} | Duration: {train_duration}')
+      
+
+        # Get final statistics
+        self.performanceMetrics()
+
+        self.plot_model_performance()
+        
+        self.plotMetrics()
         
         #print( f"Training loss:     {logs['loss']:.5f}")
-        
+    @timeit  
     def on_kFold_end(self, model, df, ds):
         self.val_inference(model, df, ds)
+        self.plateau_cnt = 1
+        self.best_val_loss = np.Inf
+        self.learningrate = 0.001
     
-
-    def on_epoch_end(self, model, val_ds, FuncLoss, best_model_name):
+    @timeit
+    def on_epoch_end(self, model, val_ds, FuncLoss):
         self.num_epochs += 1
 
         # Comput loss for validation patients
@@ -81,7 +88,7 @@ class kFoldMetrics(Metrics):
             print('Val loss IMPROVED from {} to {}'.format(self.best_val_loss, val_loss))
             self.best_val_loss = val_loss
 
-            model.save(best_model_name)
+            model.save(self.best_model_name)
             self.plateau_cnt = 1
 
             K.clear_session()
@@ -102,6 +109,7 @@ class kFoldMetrics(Metrics):
         self.loss_end_of_epoch.append(tl)
         return self.learningrate
 
+    @timeit
     def val_inference(self, model, df, ds):
         
         cnt = 0
@@ -254,6 +262,7 @@ class kFoldMetrics(Metrics):
         os.remove(mask_temp_filename)
         gc.collect()
 
+    @timeit
     def patient_loss(self, model, ds, LossFunc):
         
         val_loss = list()           
@@ -335,7 +344,7 @@ class kFoldMetrics(Metrics):
 
         return gaussian_importance_map
 
-    def performanceMetrics(self, titlename, savePath):
+    def performanceMetrics(self):
 
         # row_dict = dict.fromkeys(list(self.results_df.columns))
         # for key in self.final_classes.keys():
@@ -344,10 +353,10 @@ class kFoldMetrics(Metrics):
         yDice = self.results_df['Liver_dice']
         yHaus95 = self.results_df['Liver_haus95']
 
-        headers = [titlename, "Mean", "Median", "Min", "Max", "25th Percentile", "50th Percentile", "75th Percentile", "Std"]
+        headers = [self.model_name, "Mean", "Median", "Min", "Max", "25th Percentile", "50th Percentile", "75th Percentile", "Std"]
     
  
-        diceList = ["Dice Similarity Coefficient (" + titlename + ")", 
+        diceList = ["Dice Similarity Coefficient (" + self.model_name + ")", 
                                                     np.mean(yDice), 
                                                     np.median(yDice), 
                                                     min(yDice), 
@@ -356,7 +365,7 @@ class kFoldMetrics(Metrics):
                                                     np.percentile(yDice, 50),
                                                     np.percentile(yDice, 75),
                                                     np.std(yDice)]
-        hdList = ["95th--percentile Hausdorff Distance (" + titlename + ")", 
+        hdList = ["95th--percentile Hausdorff Distance (" + self.model_name + ")", 
                                                     np.mean(yHaus95), 
                                                     np.median(yHaus95),  
                                                     min(yHaus95), 
@@ -367,9 +376,9 @@ class kFoldMetrics(Metrics):
                                                     np.std(yHaus95)]
 
         data = pd.DataFrame([ diceList, hdList], columns=headers)
-        filename = titlename + '_'+ '{}_dice'.format('Liver')  + 'Data.csv'
+        filename = self.model_name + '_'+ '{}_dice'.format('Liver')  + 'Data.csv'
         
-        data.to_csv(os.path.join(savePath,filename), mode='a', index=False, header=False )
+        data.to_csv(os.path.join(self.resultsPath,filename), mode='a', index=False, header=False )
 
         mean_row = {'id': 'Mean'}
         median_row = {'id': 'Median'}
@@ -395,14 +404,14 @@ class kFoldMetrics(Metrics):
         self.results_df = self.results_df.append(percentile50_row, ignore_index = True)
         self.results_df = self.results_df.append(percentile75_row, ignore_index = True)
 
-        filename = titlename + '_'+ '{}_dice'.format('Liver')  + 'Data_previous.csv'
-        os.path.join(savePath,filename)
-        self.results_df.to_csv(os.path.join(savePath,filename), index = False)
+        filename = self.model_name + '_'+ '{}_dice'.format('Liver')  + 'Data_previous.csv'
+        os.path.join(self.resultsPath,filename)
+        self.results_df.to_csv(os.path.join(self.resultsPath,filename), index = False)
 
         # Write results to csv file
-        self.results_df.to_csv(self.results_csv, index = False)
+        self.results_df.to_csv(self.resultsPath + 'results_csv', index = False)
 
-    def plotMetrics(self, savePath, titlename):
+    def plotMetrics(self, ):
         row_dict = dict.fromkeys(list(self.results_df.columns))
            
     
@@ -437,21 +446,20 @@ class kFoldMetrics(Metrics):
 
         fig.tight_layout()
 
-        ax2.set_title(titlename)
+        ax2.set_title(self.model_name)
 
-        plt.savefig(savePath + "/" + titlename + '.png', bbox_inches="tight")
+        plt.savefig(self.resultsPath + "/" + self.model_name + '.png', bbox_inches="tight")
 
 
-    def plot_model_performance(self, savePath, titlename):
-        fig, (ax1, ax2) = plt.subplots(1,2)
+    def plot_model_performance(self):
+        fig, ax1 = plt.subplots(1)
         fig.suptitle('Model performance', size=20)
-        print("Check length", len(self.loss_end_of_epoch), self.num_epochs )
-        ax1.plot(range(self.num_epochs - 1), self.loss_end_of_epoch, label='Training loss' )
+        ax1.plot(range(self.num_epochs), self.loss_end_of_epoch, label='Training loss' )
         
         ax1.set_ylabel('Loss', size = 14)
         ax1.set_xlabel('Epoch', size = 14)
         ax1.legend()
-        plt.savefig(savePath + "/" + titlename + '.png', bbox_inches="tight")
+        plt.savefig(self.resultsPath + "/" + self.model_name + '.png', bbox_inches="tight")
 
 
 
