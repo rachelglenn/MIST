@@ -60,8 +60,8 @@ class RunTime(object):
         self.n_channels = len(self.params['images'])
         self.n_classes = len(self.params['labels'])
         self.n_folds = 5
-        self.epochs =  250
-        self.steps_per_epoch = 250
+        self.epochs =  4
+        self.steps_per_epoch = 4
         self.k_metrics = None
 
 

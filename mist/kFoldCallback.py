@@ -10,13 +10,27 @@ from metrics import *
 from datetime import datetime
 import tensorflow.keras.backend as K
 from mist.utils import timeit
-import csv
 
-class kFoldMetrics(Metrics):
-    def __init__(self, params):
+
+
+
+
+
+    
+
+
+class kFoldCallback(Metrics, tf.keras.callbacks.Callback):
+    def __init__(self, params, test_df, test_ds, val_ds, loss, max_epoch):
         
+        # Datasets
+        self.test_df = test_df
+        self.test_ds = test_ds
+        self.val_ds = val_ds
+
+        # loss function
+        self.loss = loss
         # Model parameters
-        
+        self.max_epoch = max_epoch
         self.learningrate = params['learning_rate']
         self.num_epochs = 0
         self.n_classes = len(params['labels'])
@@ -45,21 +59,21 @@ class kFoldMetrics(Metrics):
                 
         self.results_df = pd.DataFrame(columns = results_cols)
         self.loss_end_of_epoch = []
-        self.learningrateList = []
         
         # Time metrics
         self.time_started = None
         self.time_finsihed = None
         self.on_train_begin()
 
-        
+        # Learning Rate Monitor
+        self.learningrateMonitor = []
 
-    def on_train_begin(self):
+    def on_train_begin(self, logs=None):
         self.time_started = datetime.now()
         print(f'Training Started | {self.time_started}\n')
 
 
-    def on_training_end(self):
+    def on_training_end(self, logs=None):
         self.time_finished = datetime.now()
         train_duration = str(self.time_finished - self.time_started)
         print(f'\nTraining Finished | {self.time_finished} | Duration: {train_duration}')
@@ -74,24 +88,24 @@ class kFoldMetrics(Metrics):
         
         #print( f"Training loss:     {logs['loss']:.5f}")
     @timeit  
-    def on_kFold_end(self, model, df, ds):
-        self.val_inference(model, df, ds)
-        self.plateau_cnt = 1
-        self.best_val_loss = np.Inf
-        self.learningrate = 0.001
+    def on_kFold_end(self):
+        self.val_inference()
     
     @timeit
-    def on_epoch_end(self, model, val_ds, FuncLoss):
+    def on_epoch_end(self, epoch, logs={}):
         self.num_epochs += 1
 
+        if epoch == self.max_epoch:
+            self.on_kFold_end()
+
         # Comput loss for validation patients
-        val_loss = self.compute_val_loss(model, val_ds, FuncLoss)
+        val_loss = self.patient_loss(self.model, self.val_ds, self.loss)
         
         if val_loss < self.best_val_loss:
             print('Val loss IMPROVED from {} to {}'.format(self.best_val_loss, val_loss))
             self.best_val_loss = val_loss
 
-            model.save(self.best_model_name)
+            self.model.save(self.best_model_name)
             self.plateau_cnt = 1
 
             K.clear_session()
@@ -102,18 +116,23 @@ class kFoldMetrics(Metrics):
             self.plateau_cnt += 1
         if self.plateau_cnt % 10:
             #self.model.optimizer.lr = self.model.optimizer.lr*0.9
-            self.learningrate = self.learningrate*0.9
+            
+            old_lr = self.model.optimizer.lr.read_value()
+            new_lr = old_lr * 0.9
+            #print("\nEpoch: {}. Reducing Learning Rate from {} to {}".format(epoch, old_lr, new_lr))
+            self.model.optimizer.lr.assign(new_lr)
             self.plateau = 1
-            print('Decreasing learning rate to {}'.format( self.learningrate))
+            print('Decreasing learning rate to {}'.format(new_lr))
+            self.learningrateMonitor.append(new_lr)
         tl = val_loss
         # ta = logs['accuracy']
         # vl = logs['val_loss']
         # va = logs['val_accuracy']
         self.loss_end_of_epoch.append(tl)
-        self.learningrateList.append(self.learningrate)
-        return self.learningrate
+        
+        
 
-    
+    @timeit
     def val_inference(self, model, df, ds):
         
         cnt = 0
@@ -254,7 +273,7 @@ class kFoldMetrics(Metrics):
                 row_dict['{}_haus95'.format(key)] = self.hausdorff(pred_temp_filename, mask_temp_filename, '95')
                 row_dict['{}_avg_surf'.format(key)] = self.surface_hausdorff(pred_temp_filename, mask_temp_filename, 'mean')
                 
-            # print("Writing to results_df_______________________")
+            print("Writing to results_df_______________________")
             self.results_df = self.results_df.append(row_dict, ignore_index = True)
             
             gc.collect()
@@ -266,8 +285,8 @@ class kFoldMetrics(Metrics):
         os.remove(mask_temp_filename)
         gc.collect()
 
-    
-    def compute_val_loss(self, model, ds, LossFunc):
+    @timeit
+    def patient_loss(self, model, ds, LossFunc):
         
         val_loss = list()           
         iterator = ds.as_numpy_iterator()
@@ -319,7 +338,11 @@ class kFoldMetrics(Metrics):
                     val_loss = LossFunc.dice(truth, prediction)
             else:
                     val_loss = LossFunc.gdl(truth, prediction)
-
+            # file1 = open("myfileTestLoss.txt", "a")
+            # file1.writelines(str(epoch) + "\t"+ str(val_loss)+ "\t"+ str(self.loss) + "\t"+ str(self.model.optimizer.lr) )
+            
+            # file1.writelines('n')
+            # file1.close()  
             gc.collect()
                     
         del iterator
@@ -376,11 +399,9 @@ class kFoldMetrics(Metrics):
                                                     np.std(yHaus95)]
 
         data = pd.DataFrame([ diceList, hdList], columns=headers)
-        filename = self.model_name + '_'+ '{}_dice'.format('Liver')  + '_Data.csv'
+        filename = self.model_name + '_'+ '{}_dice'.format('Liver')  + 'Data.csv'
         
-        data.to_csv(os.path.join(self.resultsPath,filename), mode='a', index=False, header=True )
-
-        print("\n______Metrics________\n", data, "\n______________\n")
+        data.to_csv(os.path.join(self.resultsPath,filename), mode='a', index=False, header=False )
 
         mean_row = {'id': 'Mean'}
         median_row = {'id': 'Median'}
@@ -450,205 +471,19 @@ class kFoldMetrics(Metrics):
 
         ax2.set_title(self.model_name)
 
-        plt.savefig(self.resultsPath + "/" + self.model_name + '_stats.png', bbox_inches="tight")
+        plt.savefig(self.resultsPath + "/" + self.model_name + '.png', bbox_inches="tight")
 
 
     def plot_model_performance(self):
         fig, ax1 = plt.subplots(1)
         fig.suptitle('Model performance', size=20)
         ax1.plot(range(self.num_epochs), self.loss_end_of_epoch, label='Training loss' )
+        ax1.plot(range(self.num_epochs), self.learningrateMonitor, label='Traning Rate')
         
         ax1.set_ylabel('Loss', size = 14)
         ax1.set_xlabel('Epoch', size = 14)
         ax1.legend()
-        plt.savefig(self.resultsPath + "/" + self.model_name + '_loss.png', bbox_inches="tight")
+        plt.savefig(self.resultsPath + "/" + self.model_name + '.png', bbox_inches="tight")
 
-        fig, ax1 = plt.subplots(1)
-        fig.suptitle('Model Learning Rate', size=20)
-        ax1.plot(range(self.num_epochs), self.learningrateList, label='Learning Rate' )
-        
-        ax1.set_ylabel('Learning Rage', size = 14)
-        ax1.set_xlabel('Epoch', size = 14)
-        ax1.legend()
-        plt.savefig(self.resultsPath + "/" + self.model_name + '_learning.png', bbox_inches="tight")
-        file = open(self.resultsPath + '/learningrate.csv', 'w+', newline ='')
-        file.truncate()
-        # writing the data into the file
-        with file:   
-            write = csv.writer(file)
-            write.writerows(self.learningrateList)
-        file.close()
-#     def val_inference(self, model, df, ds):
-#         cnt = 0
-#         gaussian_map = self.get_gaussian()
-                
-#         iterator = ds.as_numpy_iterator()
-#         for element in iterator:
-            
-#             patient = df.iloc[cnt].to_dict()
-#             image_list = list(patient.values())[2:len(patient)]
-            
-#             original_mask = ants.image_read(patient['mask'])
-#             original_image = ants.image_read(image_list[0])
-#             original_dims = ants.image_header_info(image_list[0])['dimensions']
-            
-#             if self.use_nz_mask:
-#                 nzmask = ants.get_mask(original_image, cleanup = 0)
-#                 original_cropped = ants.crop_image(original_image, nzmask)
-            
-#             image = element[0]
-#             truth = element[1]
-#             dims = image[..., 0].shape
-                        
-#             padding = list()
-#             cropping = list()
-#             for i in range(3):
-#                 if dims[i] % self.patch_size[i] == 0:
-#                     padding.append((0, 0))
-#                     cropping.append((0, dims[i]))
-#                 else:
-#                     pad_width = int(np.ceil(dims[i] / self.patch_size[i]) * self.patch_size[i]) - dims[i]
-#                     padding.append((pad_width // 2, (pad_width // 2) + (pad_width % 2)))
-#                     cropping.append((pad_width // 2, -1 * ((pad_width // 2) + (pad_width % 2))))
-#             image = np.pad(image, (*padding, (0, 0)))
-#             pad_dims = image[..., 0].shape
-            
-#             strides = [patch_dim // 2 for patch_dim in self.patch_size]
-#             prediction = np.zeros((*pad_dims, self.n_classes))
-#             for i in range(0, pad_dims[0] - self.patch_size[0] + 1, strides[0]):
-#                 for j in range(0, pad_dims[1] - self.patch_size[1] + 1, strides[1]):
-#                     for k in range(0, pad_dims[2] - self.patch_size[2] + 1, strides[2]):
-#                         # Get patch
-#                         patch = image[i:(i + self.patch_size[0]),
-#                                       j:(j + self.patch_size[1]),
-#                                       k:(k + self.patch_size[2]), ...]
-#                         patch = patch.reshape((1, *patch.shape))
 
-#                         # Predict on original patch
-#                         pred_patch = model.predict(patch, verbose = 0)
 
-#                         # Flip along each axis and predict on augmented patches
-#                         patch_x_flip = patch[:, ::-1, :, :, ...]
-#                         pred_temp = model.predict(patch_x_flip, verbose = 0)
-#                         pred_temp = pred_temp[:, ::-1, :, :, ...]
-#                         pred_patch += pred_temp
-                        
-#                         patch_y_flip = patch[:, :, ::-1, :, ...]
-#                         pred_temp = model.predict(patch_y_flip, verbose = 0)
-#                         pred_temp = pred_temp[:, :, ::-1, :, ...]
-#                         pred_patch += pred_temp
-                        
-#                         patch_z_flip = patch[:, :, :, ::-1, ...]
-#                         pred_temp = model.predict(patch_z_flip, verbose = 0)
-#                         pred_temp = pred_temp[:, :, :, ::-1, ...]
-#                         pred_patch += pred_temp
-
-#                         # Take average of all predictions
-#                         pred_patch /= 4.
-
-#                         # Apply Gaussian weighting map
-#                         pred_patch *= gaussian_map
-
-#                         # Add patch prediction to final image
-#                         prediction[i:(i + self.patch_size[0]),
-#                                    j:(j + self.patch_size[1]),
-#                                    k:(k + self.patch_size[2]), ...] = pred_patch
-            
-#             prediction = prediction[cropping[0][0]:cropping[0][1],
-#                                     cropping[1][0]:cropping[1][1],
-#                                     cropping[2][0]:cropping[2][1], 
-#                                     ...]
-
-#             prediction = np.argmax(prediction, axis = -1)
-            
-#             # Make sure that labels are correct in prediction
-#             for j in range(self.n_classes):
-#                 prediction[prediction == j] = self.labels[j]
-                
-#             prediction = prediction.astype('float32')
-                
-#             if self.use_nz_mask:
-#                 prediction = original_cropped.new_image_like(data = prediction)
-#                 prediction = ants.decrop_image(prediction, original_image)
-#             else:
-#                 # Put prediction back into original image space
-#                 prediction = ants.from_numpy(prediction)
-                
-#             prediction.set_spacing(self.target_spacing)
-                        
-#             if np.linalg.norm(np.array(prediction.direction) - np.eye(3)) > 0:
-#                 prediction.set_direction(original_image.direction)
-            
-#             if np.linalg.norm(np.array(prediction.spacing) - np.array(original_image.spacing)) > 0:
-#                 prediction = ants.resample_image(prediction, 
-#                                                  resample_params = list(original_image.spacing), 
-#                                                  use_voxels = False, 
-#                                                  interp_type = 1)
-            
-#             prediction = prediction.numpy()
-            
-#             # Bug fix: ants.decrop_image can leave some strange artifacts in your final prediction
-#             prediction[prediction > np.max(self.labels)] = 0.
-#             prediction[prediction < np.min(self.labels)] = 0.
-            
-#             prediction_dims = prediction.shape
-#             orignal_dims = original_image.numpy().shape
-#             prediction_final_dims = [np.max([prediction_dims[i], orignal_dims[i]]) for i in range(3)]
-            
-#             prediction_final = np.zeros(tuple(prediction_final_dims))
-#             prediction_final[0:prediction.shape[0], 
-#                              0:prediction.shape[1], 
-#                              0:prediction.shape[2], ...] = prediction
-            
-#             prediction_final = prediction_final[0:orignal_dims[0], 
-#                                                 0:orignal_dims[1],
-#                                                 0:orignal_dims[2], ...]
-            
-#             prediction_final = original_image.new_image_like(data = prediction_final)
-
-#             # Write prediction mask to nifti file and save to disk
-#             prediction_filename = '{}.nii.gz'.format(patient['id'])
-#             ants.image_write(prediction_final, 
-#                              os.path.join(self.prediction_dir, 'raw', prediction_filename))
-            
-#             # Get dice and hausdorff distance for final prediction
-#             row_dict = dict.fromkeys(list(self.results_df.columns))
-#             row_dict['id'] = patient['id']
-#             for key in self.final_classes.keys():
-#                 class_labels = self.final_classes[key]
-#                 pred = prediction_final.numpy()
-#                 mask = original_mask.numpy()
-                
-#                 pred_temp = np.zeros(pred.shape)
-#                 mask_temp = np.zeros(mask.shape)
-                
-#                 for label in class_labels:
-#                     pred_label = (pred == label).astype(np.uint8)
-#                     mask_label = (mask == label).astype(np.uint8)
-                    
-#                     pred_temp += pred_label
-#                     mask_temp += mask_label
-                    
-#                 pred_temp = prediction_final.new_image_like(pred_temp)
-#                 mask_temp = original_mask.new_image_like(mask_temp)
-                
-#                 pred_temp_filename = os.path.join(self.prediction_dir, 'raw', 'pred_temp.nii.gz')
-#                 ants.image_write(pred_temp, pred_temp_filename)
-                
-#                 mask_temp_filename = os.path.join(self.prediction_dir, 'raw', 'mask_temp.nii.gz')
-#                 ants.image_write(mask_temp, mask_temp_filename)
-                
-#                 row_dict['{}_dice'.format(key)] = self.dice_sitk(pred_temp_filename, mask_temp_filename)
-#                 row_dict['{}_haus95'.format(key)] = self.hausdorff(pred_temp_filename, mask_temp_filename, '95')
-# #                 row_dict['{}_avg_surf'.format(key)] = self.metrics.surface_hausdorff(pred_temp_filename, mask_temp_filename, 'mean')
-                
-#             self.results_df = self.results_df.append(row_dict, ignore_index = True)
-            
-#             gc.collect()
-#             cnt += 1
-            
-#         # Delete temporary files and iterator to reduce memory consumption
-#         del iterator
-#         os.remove(pred_temp_filename)
-#         os.remove(mask_temp_filename)
-#         gc.collect()
