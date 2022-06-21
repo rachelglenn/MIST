@@ -66,11 +66,15 @@ class kFoldMetrics(Metrics):
       
 
         # Get final statistics
-        self.performanceMetrics()
+        
 
         self.plot_model_performance()
         
+        # Plot metrics has to be before preformance metrics
         self.plotMetrics()
+
+        # Performance Metrics
+        self.performanceMetrics()
         
         #print( f"Training loss:     {logs['loss']:.5f}")
     @timeit  
@@ -254,12 +258,12 @@ class kFoldMetrics(Metrics):
                 row_dict['{}_haus95'.format(key)] = self.hausdorff(pred_temp_filename, mask_temp_filename, '95')
                 row_dict['{}_avg_surf'.format(key)] = self.surface_hausdorff(pred_temp_filename, mask_temp_filename, 'mean')
                 
-            # print("Writing to results_df_______________________")
+            #print("Writing to results_df_______________________")
             self.results_df = self.results_df.append(row_dict, ignore_index = True)
             
             gc.collect()
             cnt += 1
-            
+        print("wrote ", cnt, "patients")
         # Delete temporary files and iterator to reduce memory consumption
         del iterator
         os.remove(pred_temp_filename)
@@ -398,30 +402,37 @@ class kFoldMetrics(Metrics):
             percentile50_row[col] = np.percentile(self.results_df[col], 50)
             percentile75_row[col] = np.percentile(self.results_df[col], 75)
 
+        results_df = pd.DataFrame()
+        results_df = results_df.append(mean_row, ignore_index = True)
+        results_df = results_df.append(std_row, ignore_index = True)
+        results_df = results_df.append(median_row, ignore_index = True)
+        results_df = results_df.append(percentile25_row, ignore_index = True)
+        results_df = results_df.append(percentile50_row, ignore_index = True)
+        results_df = results_df.append(percentile75_row, ignore_index = True)
 
-        self.results_df = self.results_df.append(mean_row, ignore_index = True)
-        self.results_df = self.results_df.append(std_row, ignore_index = True)
-        self.results_df = self.results_df.append(median_row, ignore_index = True)
-        self.results_df = self.results_df.append(percentile25_row, ignore_index = True)
-        self.results_df = self.results_df.append(percentile50_row, ignore_index = True)
-        self.results_df = self.results_df.append(percentile75_row, ignore_index = True)
-
-        filename = self.model_name + '_'+ '{}_dice'.format('Liver')  + 'Data_previous.csv'
-        os.path.join(self.resultsPath,filename)
-        self.results_df.to_csv(os.path.join(self.resultsPath,filename), index = False)
+        filename = self.model_name + '_dice_results.csv'
+        #os.path.join(self.resultsPath,filename)
+        #self.results_df.to_csv(os.path.join(self.resultsPath,filename), index = False)
 
         # Write results to csv file
-        self.results_df.to_csv(self.resultsPath + 'results_csv', index = False)
+        results_df.to_csv(self.resultsPath + '/' + filename, index = False)
+        print("Dice results written to:", self.resultsPath + '/' + filename)
+        
+        filename = self.model_name + '_dice_performance.csv'
+        self.results_df.to_csv(self.resultsPath + '/' + filename, index = False)
+        print("Dice coefficient written to:", self.resultsPath + '/' + filename)
 
-    def plotMetrics(self, ):
+    def plotMetrics(self ):
         row_dict = dict.fromkeys(list(self.results_df.columns))
            
     
         Liver_dice = self.results_df['Liver_dice']
         Liver_haus95 = self.results_df['Liver_haus95']
-        id = self.results_df['id']
+
         #Liver_dice = row_dict['{}_dice'.format(key)]
         #Liver_haus95 = row_dict['{}_haus95'.format(key)]
+        # id = self.results_df['id']
+        # print("id:\n", self.results_df['id'])
         id = self.results_df['id']
 
         yDice = [x for _, x in sorted(zip(id, Liver_dice))]
@@ -437,7 +448,6 @@ class kFoldMetrics(Metrics):
         ax1.plot(x, yDice, linestyle="-", marker="o", label='Dice coefficient', color=color)
         ax1.set_ylim(0, 1.05*max(yDice))
 
-
         ax2 = ax1.twinx()
 
         color = 'tab:blue'
@@ -449,8 +459,9 @@ class kFoldMetrics(Metrics):
         fig.tight_layout()
 
         ax2.set_title(self.model_name)
-
-        plt.savefig(self.resultsPath + "/" + self.model_name + '_stats.png', bbox_inches="tight")
+        filename = self.resultsPath + "/" + self.model_name + '_stats.png'
+        plt.savefig(filename, bbox_inches="tight")
+        print("Dice Plot coefficient written to:", filename)
 
 
     def plot_model_performance(self):
@@ -470,14 +481,22 @@ class kFoldMetrics(Metrics):
         ax1.set_ylabel('Learning Rage', size = 14)
         ax1.set_xlabel('Epoch', size = 14)
         ax1.legend()
-        plt.savefig(self.resultsPath + "/" + self.model_name + '_learning.png', bbox_inches="tight")
-        file = open(self.resultsPath + '/learningrate.csv', 'w+', newline ='')
-        file.truncate()
-        # writing the data into the file
-        with file:   
-            write = csv.writer(file)
-            write.writerows(self.learningrateList)
-        file.close()
+
+        filename = self.resultsPath + "/" + self.model_name + '_learning.png'
+        plt.savefig(filename, bbox_inches="tight")
+        print("learning rate Plot written to:", filename)
+
+        filename = self.resultsPath + "/" + self.model_name +'learningrate.csv'
+        np.savetxt(filename, np.asarray(self.learningrateList),delimiter='\n')
+        # file = open(self.resultsPath + '/learningrate.csv', 'w+', newline ='')
+        
+        # file.truncate()
+        # # writing the data into the file
+        # with file:   
+        #     write = csv.writer(file)
+        #     write.writerows(self.learningrateList)
+        # file.close()
+        print("learning rate written to:", filename)
 #     def val_inference(self, model, df, ds):
 #         cnt = 0
 #         gaussian_map = self.get_gaussian()

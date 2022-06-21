@@ -59,9 +59,9 @@ class RunTime(object):
 
         self.n_channels = len(self.params['images'])
         self.n_classes = len(self.params['labels'])
-        self.n_folds = 5
-        self.epochs =  4
-        self.steps_per_epoch = 4
+        self.n_folds = 6
+        self.epochs =  250
+        self.steps_per_epoch = 250
         self.k_metrics = None
 
 
@@ -321,6 +321,7 @@ class RunTime(object):
 
         ### Start training loop ###
         split_cnt = 1
+        print("Folds:", self.params['folds'])
         for fold in self.params['folds']:
             print('Starting fold {}...'.format(fold))
             train_tfr_list = [tfrecords[idx] for idx in train_splits[fold]]
@@ -369,8 +370,8 @@ class RunTime(object):
                 # Train model
                 training_history = model.fit(train_ds, 
                           epochs = 1, 
-                          #steps_per_epoch =  self.steps_per_epoch),
-                            steps_per_epoch =  len(train_cache))
+                          steps_per_epoch =  self.steps_per_epoch))
+                          #  steps_per_epoch =  len(train_cache))
                           #steps_per_epoch = (len(train_cache)) // batchSize)
                           #validation_data = validationGenerator ,
                           #validation_steps = (len(val)) // batchSize,
@@ -410,7 +411,7 @@ class RunTime(object):
             self.k_metrics.on_kFold_end( model, test_df, test_ds)
         ### End of training ###
         
-        #self.k_metrics.on_training_end()
+        self.k_metrics.on_training_end()
         del model
         K.clear_session()
         gc.collect()
@@ -666,9 +667,9 @@ class RunTime(object):
         # Setup Signal handler
         signal.signal(signal.SIGINT, self.handler)
         
-        while True:
-            # Run training pipeline
-            self.train()
+        #while True:
+        # Run training pipeline
+        self.train()
 
 
 
