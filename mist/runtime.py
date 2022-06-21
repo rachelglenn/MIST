@@ -370,7 +370,7 @@ class RunTime(object):
                 # Train model
                 training_history = model.fit(train_ds, 
                           epochs = 1, 
-                          steps_per_epoch =  self.steps_per_epoch))
+                          steps_per_epoch =  self.steps_per_epoch)
                           #  steps_per_epoch =  len(train_cache))
                           #steps_per_epoch = (len(train_cache)) // batchSize)
                           #validation_data = validationGenerator ,
