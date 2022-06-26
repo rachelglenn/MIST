@@ -57,9 +57,9 @@ data_df = pd.read_csv('/rsrch1/ip/rglenn1/data/trainingdata.csv')
 data_df = pd.read_csv('/rsrch1/ip/rglenn1/data/paths.csv')
 
 
-print(data_df)
-#print(data_df['dataid'][0:10])
-#print(data_df['uid'][0:10])
+# print(data_df)
+# print(data_df['dataid'][0:10])
+# print(data_df['uid'][0:10])
 # print(data_df['image'][0:10])
 # print(data_df['label'][0:10])
 # print(data_df['train'][0:10])
@@ -69,7 +69,7 @@ print(data_df)
 
 user_params_lits = {'raw_data_dir': '/rsrch1/ip/rglenn1/data/Processed',
                     'processed_data_dir': '/rsrch1/ip/rglenn1/data/TFRecord',
-                    'base_model_name': 'unet_full_detection',
+                    'base_model_name': 'unet_pocket_detection',
                     'model_dir': '/rsrch1/ip/rglenn1/data/models',
                     'prediction_dir': '/rsrch1/ip/rglenn1/data/predictions',
                     'raw_paths_csv': '/rsrch1/ip/rglenn1/data/paths.csv',
@@ -82,7 +82,7 @@ user_params_lits = {'raw_data_dir': '/rsrch1/ip/rglenn1/data/Processed',
                     'final_classes': {'Liver': [1]},
                     'loss': 'dice', 
                     'model': 'unet', 
-                    'pocket': False,
+                    'pocket': True,
                     'gpu' :4}
 
 

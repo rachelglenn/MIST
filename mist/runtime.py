@@ -60,8 +60,8 @@ class RunTime(object):
         self.n_channels = len(self.params['images'])
         self.n_classes = len(self.params['labels'])
         self.n_folds = 6
-        self.epochs =  250
-        self.steps_per_epoch = 250
+        self.epochs =  5
+        self.steps_per_epoch = 10
         self.k_metrics = None
 
 
@@ -246,6 +246,10 @@ class RunTime(object):
                                             compression_type = 'GZIP', 
                                             num_parallel_reads = tf.data.experimental.AUTOTUNE)
         test_ds = test_ds.map(self.decode_val, num_parallel_calls = tf.data.experimental.AUTOTUNE)
+
+        filename = self.params['results_path'] + "/" + datetime.now().strftime("%Y_%m_%d-%I_%M_%S_%p") 
+        filename += "_testset.txt"
+        np.savetxt(filename, np.asarray(test_df_ids), fmt = '%s', delimiter='\n')
         return test_df, test_ds
 
 
@@ -269,6 +273,16 @@ class RunTime(object):
                                             compression_type = 'GZIP', 
                                             num_parallel_reads = tf.data.experimental.AUTOTUNE)
         val_ds = val_ds.map(self.decode_val, num_parallel_calls = tf.data.experimental.AUTOTUNE)
+
+        filename =  self.params['results_path'] + "/" + datetime.now().strftime("%Y_%m_%d-%I_%M_%S_%p") 
+        filename += "_trainset.txt"
+        # print("train_cache", train_cache)
+        np.savetxt(filename, np.array(train_cache),  fmt = '%s',  delimiter='\n')
+        
+        filename =  self.params['results_path'] + "/" + datetime.now().strftime("%Y_%m_%d-%I_%M_%S_%p") 
+        filename += "_validset.txt"
+        np.savetxt(filename, np.asarray(val_tfr_list),  fmt = '%s',  delimiter='\n')
+
         return train_ds, val_ds
 
             
@@ -287,7 +301,7 @@ class RunTime(object):
         # Convert to tfrecord
         tfrecords = [os.path.join(self.params['processed_data_dir'], 
                                   '{}.tfrecord'.format(self.df.iloc[i]['id'])) for i in range(len(self.df))]
-        
+        print("tfrecords", tfrecords)
         #split the data
         splits = kfold.split(tfrecords)
         
@@ -325,9 +339,10 @@ class RunTime(object):
         for fold in self.params['folds']:
             print('Starting fold {}...'.format(fold))
             train_tfr_list = [tfrecords[idx] for idx in train_splits[fold]]
+            
 
             # Get test dataset 
-            test_df, test_ds = self.testSet(tfrecords, split[1])
+            test_df, test_ds = self.testSet(tfrecords, train_splits[fold])
 
             if 0.1*len(train_tfr_list) >= 10:
                 test_size = 10./len(train_tfr_list)
@@ -339,6 +354,11 @@ class RunTime(object):
                                                                   train_tfr_list,
                                                                   test_size = test_size,
                                                                   random_state = 42)
+            #df = pd.DataFrame(train_tfr_list)
+            #np.random.shuffle(train_tfr_list)
+            #training, test = x[:80,:], x[80:,:]
+            #train, validate, test = np.split(df.sample(frac=1), [int(.6*len(df)), int(.8*len(df))])
+            #train_tfr_list, val_tfr_list = np.split(df.sample(frac=1), [int(.6*len(df)), int(.8*len(df))])
             
             if cache_size < len(train_tfr_list):
                 # Initialize training cache and pool in first epoch
@@ -349,13 +369,11 @@ class RunTime(object):
             else:
                 train_cache = train_tfr_list
 
+            # Prepare training and validation set
+            train_ds, val_ds = self.trainingValidationSet(train_cache, cache_size, crop_fn, val_tfr_list)
             
             for i in range(self.epochs):
                 print('Epoch {}/{}'.format(i + 1, self.epochs))
-                
-                
-                # Prepare training and validation set
-                train_ds, val_ds = self.trainingValidationSet(train_cache, cache_size, crop_fn, val_tfr_list)
                
                 learningrate = self.k_metrics.learningrate
                 model = self.setupModel( i, learningrate, depth, strategy)   
@@ -403,12 +421,15 @@ class RunTime(object):
 
 
 
-                del train_ds, val_ds
+                #d
                 K.clear_session()
                 gc.collect()
 
                 ### End of epoch ###
             self.k_metrics.on_kFold_end( model, test_df, test_ds)
+            del train_ds, val_ds, test_df, test_ds
+            K.clear_session()
+            gc.collect() 
         ### End of training ###
         
         self.k_metrics.on_training_end()
@@ -672,6 +693,13 @@ class RunTime(object):
         self.train()
 
 
+    def predict(self):
+        # Get Training data
+        self.df = pd.read_csv(self.params['raw_paths_csv'])
+        
+        # Convert to tfrecord
+        tfrecords = [os.path.join(self.params['processed_data_dir'], 
+                                  '{}.tfrecord'.format(self.df.iloc[i]['id'])) for i in range(len(self.df))]
 
 
         
