@@ -44,7 +44,41 @@ warnings.simplefilter(action = 'ignore',
                       category = FutureWarning)
 
 
+from scipy import ndimage
 
+def downsamplePatient(patient_CT, resize_factor):
+    original_CT = sitk.ReadImage(patient_CT,sitk.sitkInt32)
+    dimension = original_CT.GetDimension()
+    reference_physical_size = np.zeros(original_CT.GetDimension())
+    reference_physical_size[:] = [(sz-1)*spc if sz*spc>mx  else mx for sz,spc,mx in zip(original_CT.GetSize(), original_CT.GetSpacing(), reference_physical_size)]
+    reference_origin = original_CT.GetOrigin()
+    reference_direction = original_CT.GetDirection()
+
+    reference_size = [round(sz/resize_factor) for sz in original_CT.GetSize()] 
+    reference_spacing = [ phys_sz/(sz-1) for sz,phys_sz in zip(reference_size, reference_physical_size) ]
+
+    reference_image = sitk.Image(reference_size, original_CT.GetPixelIDValue())
+    reference_image.SetOrigin(reference_origin)
+    reference_image.SetSpacing(reference_spacing)
+    reference_image.SetDirection(reference_direction)
+
+    reference_center = np.array(reference_image.TransformContinuousIndexToPhysicalPoint(np.array(reference_image.GetSize())/2.0))
+    
+    transform = sitk.AffineTransform(dimension)
+    transform.SetMatrix(original_CT.GetDirection())
+
+    transform.SetTranslation(np.array(original_CT.GetOrigin()) - reference_origin)
+  
+
+    centering_transform = sitk.TranslationTransform(dimension)
+    img_center = np.array(original_CT.TransformContinuousIndexToPhysicalPoint(np.array(original_CT.GetSize())/2.0))
+    centering_transform.SetOffset(np.array(transform.GetInverse().TransformPoint(img_center) - reference_center))
+    centered_transform = sitk.Transform(transform)
+    centered_transform.AddTransform(centering_transform)
+
+    # sitk.Show(sitk.Resample(original_CT, reference_image, centered_transform, sitk.sitkLinear, 0.0))
+    
+    return sitk.Resample(original_CT, reference_image, centered_transform, sitk.sitkLinear, 0.0)
 
 class RunTime(object):
     
@@ -59,9 +93,9 @@ class RunTime(object):
 
         self.n_channels = len(self.params['images'])
         self.n_classes = len(self.params['labels'])
-        self.n_folds = 6
-        self.epochs =  5
-        self.steps_per_epoch = 10
+        self.n_folds = 5
+        self.epochs =  100
+        self.steps_per_epoch = 250
         self.k_metrics = None
 
 
@@ -107,6 +141,7 @@ class RunTime(object):
         # TF constant for reshaping list of points to array
         three = tf.constant(3, shape = (1,), dtype = tf.int64)
         label_index_ranges = features['label_index_ranges']
+        #print('label_index_range', [len(self.params['labels']) + 1])
         num_points = tf.reshape(label_index_ranges[-1], shape = (1,))
         label_points = tf.sparse.to_dense(features['label_points'])
         label_points = tf.reshape(label_points, tf.concat([three, num_points], axis = -1))
@@ -139,6 +174,7 @@ class RunTime(object):
         if tf.random.uniform([]) <= fg_prob:
             # Pick a foreground point (i.e., any label that is not 0)
             # Randomly pick a foreground class
+            print('check_min_max 176',1,  len(self.params['labels']))
             label_idx = tf.random.uniform([], 
                                           minval = 1, 
                                           maxval = len(self.params['labels']), 
@@ -155,9 +191,16 @@ class RunTime(object):
             high = 1
             
         # Pick center point for patch
+        print('check_min_max 192', low, high ) # For brats, 3 values Might need to change with VF
+        # point_idx = tf.random.uniform([], 
+        #                               minval = label_index_ranges[low], 
+        #                               maxval = label_index_ranges[high], 
+        #                               dtype=tf.int64)
+        
+        # RG found bug! Temporary fix
         point_idx = tf.random.uniform([], 
-                                      minval = label_index_ranges[low], 
-                                      maxval = label_index_ranges[high], 
+                                      minval = 0, 
+                                      maxval = 1, 
                                       dtype=tf.int64)
         point = label_points[..., point_idx]
             
@@ -292,8 +335,8 @@ class RunTime(object):
     
     def train(self):
 
-        # Get folds for k-fold cross validation
-        kfold = KFold(n_splits = self.n_folds, shuffle = True, random_state = 42)
+        # Get folds for k-fold cross validation 42, 24, 12, 9, 4, 11, 34, 56, 34, 2) 
+        kfold = KFold(n_splits = self.n_folds, shuffle = True, random_state = 11)
 
         # Get Training data
         self.df = pd.read_csv(self.params['raw_paths_csv'])
@@ -301,7 +344,12 @@ class RunTime(object):
         # Convert to tfrecord
         tfrecords = [os.path.join(self.params['processed_data_dir'], 
                                   '{}.tfrecord'.format(self.df.iloc[i]['id'])) for i in range(len(self.df))]
-        print("tfrecords", tfrecords)
+        tfrecords = sorted(tfrecords)
+
+
+        print("tfrecords", len(tfrecords), self.params['processed_data_dir'])
+        #tfrecords1 = tfrecords[1:5]
+        #tfrecords = tfrecords[1:17] + tfrecords[25:30]
         #split the data
         splits = kfold.split(tfrecords)
         
@@ -309,8 +357,11 @@ class RunTime(object):
         train_splits = list()
         test_splits = list()
         for split in splits:
-            train_splits.append(split[0])
-            test_splits.append(split[1])
+            train_splits.append(sorted(split[0]))
+            test_splits.append(sorted(split[1]))
+
+        train_splits = train_splits
+        test_splits = test_splits
 
         # Setup Model
         depth, cache_size = self.inferredParams()
@@ -342,7 +393,7 @@ class RunTime(object):
             
 
             # Get test dataset 
-            test_df, test_ds = self.testSet(tfrecords, train_splits[fold])
+            test_df, test_ds = self.testSet(tfrecords, test_splits[fold])
 
             if 0.1*len(train_tfr_list) >= 10:
                 test_size = 10./len(train_tfr_list)
@@ -370,23 +421,76 @@ class RunTime(object):
                 train_cache = train_tfr_list
 
             # Prepare training and validation set
-            train_ds, val_ds = self.trainingValidationSet(train_cache, cache_size, crop_fn, val_tfr_list)
+            train_ds, val_ds = self.trainingValidationSet(train_cache, cache_size, crop_fn, sorted(val_tfr_list))
+            print('check size', np.shape(train_ds))
+            print('check size', np.shape(val_ds))
+        
+            # ####RG changed to numpy files
+            # processed_data_folder = '/rsrch1/ip/rglenn1/data/VF_datset'
+
+            # images_dir = os.path.join(processed_data_folder, 'images')
+            # images = [os.path.join(images_dir, file) for file in os.listdir(images_dir)]
+            # #images = self.df['image']
+            # #print(images)
             
+
+            # labels_dir = os.path.join(processed_data_folder, 'labels')
+            # labels = [os.path.join(labels_dir, file) for file in os.listdir(labels_dir)]
+            # #labels = self.df['mask']
+            # splits = kfold.split(list(range(len(images))))
+
+            #         # Extract folds so that users can specify folds to train on
+            # train_splits = list()
+            # test_splits = list()
+            # for split in splits:
+            #     train_splits.append(split[0])
+            #     test_splits.append(split[1])
+            # train_images = [images[idx] for idx in train_splits[fold]]
+            # train_labels = [labels[idx] for idx in train_splits[fold]]
+            
+            # test_images = [images[idx] for idx in test_splits[fold]]
+            # test_images.sort()
+
+            # test_labels = [labels[idx] for idx in test_splits[fold]]
+            # test_labels.sort()
+
+            
+            # # Get validation set from training split
+            # train_images, val_images, train_labels, val_labels = train_test_split(train_images,
+            #                                                                       train_labels,
+            #                                                                       test_size=0.1,
+            #                                                                       random_state=42)
+                                                                                  
+            # train_dataset = tf.data.Dataset.from_tensor_slices((train_images, train_labels))
+            # test_dataset = tf.data.Dataset.from_tensor_slices((test_images, test_labels))
+            # BATCH_SIZE = 2
+            # SHUFFLE_BUFFER_SIZE = 10
+
+            # train_dataset = train_dataset.shuffle(SHUFFLE_BUFFER_SIZE).batch(BATCH_SIZE)
+            # test_dataset = test_dataset.batch(BATCH_SIZE)
+            # ###############End RG
+
+
+
             for i in range(self.epochs):
                 print('Epoch {}/{}'.format(i + 1, self.epochs))
                
                 learningrate = self.k_metrics.learningrate
                 model = self.setupModel( i, learningrate, depth, strategy)   
-                
+                from keras.utils.vis_utils import plot_model
+                plot_model(model, to_file='model_plot.png', show_shapes=True, show_layer_names=True)
+                #model.summary()
 
                 # Setup tensorboard
                 idfold = split_cnt
                 #os.system('mkdir -p log/%d/' % idfold)
                 #tensorboard = TensorBoard(log_dir='./log/%d/' % idfold, histogram_freq=0, write_graph=True, write_images=False)
-                
+    
+
+
                
                 # Train model
-                training_history = model.fit(train_ds, 
+                training_history = model.fit(train_ds, #RG change to numpy files
                           epochs = 1, 
                           steps_per_epoch =  self.steps_per_epoch)
                           #  steps_per_epoch =  len(train_cache))
@@ -472,7 +576,9 @@ class RunTime(object):
             
             print("Error: Median_image_size not found rerun with preprocessing")
             cache_size = 500*100
-            median_image_size = [134, 170, 137]
+            median_image_size = [134, 170, 137] # 33 patient
+            #median_image_size = [512, 512, 51] # RG VF
+            #patch_size = [64,64,64] # RG VF
            
 
 
@@ -484,6 +590,7 @@ class RunTime(object):
             # Get candidate patch size from median image size
             patch_size = [get_nearest_power(median_image_size[i]) for i in range(3)]
             patch_size = [int(patch_size[i]) for i in range(3)]
+            #patch_size = [64,64,64] # RG VF
 
             # Get available GPU memory
             gpu_memory_needed = np.Inf
@@ -560,8 +667,18 @@ class RunTime(object):
         #alpha = self.alpha_schedule()
         #self.params['learning_rate'] = 0.001
         alpha = self.alpha_schedule(step)
-        opt = tf.optimizers.Adam(learning_rate = learning_rate)
+        opt = tf.optimizers.Adam(learning_rate = learning_rate) # Change for VF
+        #opt = tf.keras.optimizers.SGD(
+        #    learning_rate=learning_rate,
+        #    momentum=0.0,
+        #    nesterov=False,
+        #    clipnorm=None,
+        #    clipvalue=None,
+        #    global_clipnorm=None,
+        #    name="SGD"
+        #)
         if os.path.exists(self.params['best_model_name']):
+            print("loading previous model...",self.params['best_model_name'])
             if self.multi_gpu and strategy != None:
                 with strategy.scope():
                     # Reload model and resume training for later epochs
@@ -574,6 +691,7 @@ class RunTime(object):
                 # tf.config.optimizer.set_jit(True)
                 model.compile(optimizer = opt, loss = [self.loss.loss_wrapper(alpha)])
         else:
+            print("loading new model...")
             #if epoch == 0:
             if self.multi_gpu and strategy != None:
                 with strategy.scope():
@@ -700,7 +818,7 @@ class RunTime(object):
         # Convert to tfrecord
         tfrecords = [os.path.join(self.params['processed_data_dir'], 
                                   '{}.tfrecord'.format(self.df.iloc[i]['id'])) for i in range(len(self.df))]
-
+    
 
         
 

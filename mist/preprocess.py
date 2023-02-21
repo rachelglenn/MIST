@@ -17,6 +17,7 @@ class Preprocess(object):
     
     def __init__(self, input_params):
         # Get user defined parameters
+        print("User params file:", input_params)
         with open(input_params, 'r') as file:
             self.params = json.load(file)
                 
@@ -32,27 +33,32 @@ class Preprocess(object):
         names_dict = dict()
         names_dict['mask'] = self.params['mask']
         for key in self.params['images'].keys():
+            print("number of channels", self.params['images'][key])
             names_dict[key] = self.params['images'][key]
             
         cols = ['id'] + list(names_dict.keys())
         df = pd.DataFrame(columns = cols)
         row_dict = dict.fromkeys(cols)
 
-        ids = os.listdir(base_dir)
+        ids = os.listdir(base_dir) # RG Fix for VF
+        df1 = pd.read_csv(self.params['raw_paths_csv'])
+        #print(list(df1['abdomen']))
+        #ids = list(df1['abdomen'])
 
-        for i in ids:
-            row_dict['id'] = i
-            path = os.path.join(base_dir, i)
-            files = self.get_files_list(path)
+        #for i in ids:
+        #    row_dict['id'] = i
+        #    path = os.path.join(base_dir, i)
+        #    files = self.get_files_list(path)
 
-            for file in files:
-                for img_type in names_dict.keys():
-                    for img_string in names_dict[img_type]:
-                        if img_string in file:
-                            row_dict[img_type] = file
+        #    for file in files:
+        #        for img_type in names_dict.keys():
+        #            for img_string in names_dict[img_type]:
+        #                if img_string in file:
+        #                    row_dict[img_type] = file
 
-            df = df.append(row_dict, ignore_index = True)
-        return df
+        #    df = df.append(row_dict, ignore_index = True)
+        print('df colums', df1.columns, len(df1))
+        return df1
     
     def check_nz_mask(self):
         '''
@@ -74,10 +80,12 @@ class Preprocess(object):
             # Read original image
             full_sized_image = ants.image_read(image_list[0])
             full_dims = full_sized_image.numpy().shape
+       
             
             # Create non-zero mask from first image in image list
             nzmask = ants.image_read(image_list[0])
             nzmask = ants.get_mask(nzmask, cleanup = 0)
+            
             
             # Crop original image according to non-zero mask
             cropped_image = ants.crop_image(full_sized_image, nzmask)
@@ -91,7 +99,8 @@ class Preprocess(object):
         else:
             use_nz_mask = False
             
-        return use_nz_mask
+        return use_nz_mask #VS Fat project needs this turned off
+        #return False
     
     def get_min_component_size(self):
         '''
@@ -239,12 +248,12 @@ class Preprocess(object):
                 # Use the mask for this. It is faster to load and resample.
                 mask = ants.image_read(patient['mask'])
             
-            # If the data is anisotrpic, get resampled image size.
+            # If the data is anisotrpic, get resampled image size. RG removed
             if self.anisotropic:
-                mask = ants.resample_image(mask, 
-                                           resample_params = self.inferred_params['target_spacing'], 
-                                           use_voxels = False, 
-                                           interp_type = 1)
+                 mask = ants.resample_image(mask, 
+                                            resample_params = self.inferred_params['target_spacing'], 
+                                            use_voxels = False, 
+                                            interp_type = 1)
                 
             mask = mask.numpy()
             dims = mask.shape
@@ -253,6 +262,7 @@ class Preprocess(object):
             image_buffer_size = 4 * (np.prod(dims) * (len(image_list) + (2 * len(self.params['labels']))))
             
             # If data exceeds tfrecord buffer size, then resample to coarser resolution
+            image_buffer_size = 0 # RG test for vf dataset
             if image_buffer_size > max_buffer_size:
                 print('Images are too large, coarsening target spacing...')
                 
@@ -275,7 +285,7 @@ class Preprocess(object):
         # Get patch size after finalizing target image spacing
         median_resampled_dims = list(np.median(resampled_dims, axis = 0))
         median_resampled_dims = [int(np.floor(median_resampled_dims[i])) for i in range(3)]
-                
+        print("Median sample dimensions......",median_resampled_dims )        
         return median_resampled_dims
         
     def get_ct_norm_parameters(self):
@@ -396,9 +406,10 @@ class Preprocess(object):
         self.anisotropic = self.check_anisotropic()
         
         # Start getting parameters from dataset
-        use_nz_mask = self.check_nz_mask()
-        min_component_size = self.get_min_component_size()
-        target_spacing = self.get_target_image_spacing()
+        use_nz_mask = False # self.check_nz_mask() RG commented for VS Fat
+        
+        min_component_size = self.get_min_component_size() # RG for VF
+        target_spacing = self.get_target_image_spacing() #RG for VF
 
         if self.params['modality'] == 'ct':
             
@@ -420,7 +431,7 @@ class Preprocess(object):
                                     'window_range': [0.5, 99.5], 
                                     'min_component_size': float(min_component_size)}
             
-        median_dims = self.get_median_dims()
+        median_dims = self.get_median_dims() #RG VF
         self.inferred_params['median_image_size'] = [int(median_dims[i]) for i in range(3)]
                             
     def run(self):
@@ -436,13 +447,27 @@ class Preprocess(object):
             # Get list of image paths and segmentation mask
             image_list = list(patient.values())[2:len(patient)]
             for image_path in image_list:
-                image_header = ants.image_header_info(image_path)
                 
-                if (mask_header['dimensions'] != image_header['dimensions']) or (mask_header['spacing'] != image_header['spacing']):
-                    print('In {}: Header information does not match'.format(patient['id']))
+                image_header = ants.image_header_info(image_path)
+                #print("uncomment after line 442 to check image headers")
+                #RG Removed 
+                
+                if (mask_header['dimensions'] != image_header['dimensions']):
+                    print('In {}: dimensions in Header information does not match'.format(patient['id']))
+                    print("image_path:", image_path)
+                    print("mask", patient['mask'])
+                    print("Mask dimensions:",mask_header['spacing'] )
+                    print("Patient dimensions",image_header['spacing'] )
                     bad_data.append(i)
                     break
-                          
+                if  (mask_header['spacing'] != image_header['spacing']):
+                    print('In {}: Spacing In Header information does not match'.format(patient['id']))
+                    print("image_path:", image_path)
+                    print("mask", patient['mask'])
+                    print("Mask spacing:",mask_header['spacing'] )
+                    print("Patient Spacing",image_header['spacing'] )
+                    bad_data.append(i)
+                    break                
         rows_to_drop = self.df.index[bad_data]
         self.df.drop(rows_to_drop, inplace = True)
         self.df.to_csv(self.params['raw_paths_csv'], index = False)
@@ -466,13 +491,15 @@ class Preprocess(object):
             # Get list of image paths and segmentation mask
             image_list = list(patient.values())[2:len(patient)]
             mask = ants.image_read(patient['mask'])
-
+            #mask = mask[:,:,48]
+            #print("size of image",np.shape(mask))
             # Reorient mask to RAI if not already in RAI
             if np.linalg.norm(mask.direction - np.eye(3)) > 0:
                 mask.set_direction(np.eye(3))
             
             # Resample mask to target spacing if dataset is anisotropic
             if self.anisotropic:
+                print('resampling image if dataset is anisotropic...will change image sizes', ) 
                 mask = ants.resample_image(mask, 
                                            resample_params = self.inferred_params['target_spacing'], 
                                            use_voxels = False, 
@@ -490,6 +517,8 @@ class Preprocess(object):
             for image_path in image_list:
                 # Load image as ants image
                 image = ants.image_read(image_path)
+                #image = image[:,:,48]
+                #print('Image dimensions:', np.shape(image))
                 
                 # Reorient image to RAI if not already in RAI
                 if np.linalg.norm(image.direction - np.eye(3)) > 0:
@@ -510,6 +539,8 @@ class Preprocess(object):
 
             # Get dims of images
             mask_npy = mask.numpy()
+            #print("spae,", np.shape(mask_npy))
+            #mask_npy= mask_npy[:,:,1:42]
             dims = mask_npy.shape
             
             # Do not compute DTM if we are using dice or gdl loss
@@ -539,10 +570,12 @@ class Preprocess(object):
                             
             # Apply windowing and normalization to images
             image_npy = np.zeros((*dims, len(image_list)))
+            #print("size of image",np.shape(image_npy))
             for j in range(len(image_list)):
                 img = images[j].numpy()
-                img = self.window(img)
-                img = self.normalize(img)
+                #img = img[:,:,1:42]
+                img = self.window(img) # RG VF
+                img = self.normalize(img) # RG VF
                 
                 # Bug fix. Sometimes the dimensions of the resampled images
                 # are off by 1. 
@@ -598,7 +631,8 @@ class Preprocess(object):
                 tf_feature_num_classes = len(self.params['labels'])
             else:
                 tf_feature_num_classes = 2 * len(self.params['labels'])
-                
+            print("size of image",np.shape(image_npy))
+            print("size of mask", np.shape(mask_onehot))
             feature = {'image': self.float_feature(image_npy.ravel()),
                        'mask': self.float_feature(mask_onehot.ravel()),
                        'dims': self.int_feature(list(dims)),

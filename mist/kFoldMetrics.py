@@ -11,6 +11,8 @@ from datetime import datetime
 import tensorflow.keras.backend as K
 from mist.utils import timeit
 import csv
+import time 
+from metrics import Metrics
 
 class kFoldMetrics(Metrics):
     def __init__(self, params):
@@ -62,8 +64,11 @@ class kFoldMetrics(Metrics):
     def on_training_end(self):
         self.time_finished = datetime.now()
         train_duration = str(self.time_finished - self.time_started)
-        print(f'\nTraining Finished | {self.time_finished} | Duration: {train_duration}')
-      
+        timing_duration = f'\nTraining Finished | {self.time_finished} | Duration: {train_duration}'
+        print(timing_duration)
+        filename = self.model_name + '_'+ '{}_dice'.format('Liver')  + '_Timing.csv'
+        with open('readme.txt', 'w') as f:
+            f.write(timing_duration)
 
         # Get final statistics
         
@@ -77,15 +82,15 @@ class kFoldMetrics(Metrics):
         self.performanceMetrics()
         
         #print( f"Training loss:     {logs['loss']:.5f}")
-    @timeit  
+
     def on_kFold_end(self, model, df, ds):
         self.val_inference(model, df, ds)
         self.plateau_cnt = 1
         self.best_val_loss = np.Inf
         self.learningrate = 0.001
     
-    @timeit
     def on_epoch_end(self, model, val_ds, FuncLoss):
+        ts = time.time()
         self.num_epochs += 1
 
         # Comput loss for validation patients
@@ -115,6 +120,11 @@ class kFoldMetrics(Metrics):
         # va = logs['val_accuracy']
         self.loss_end_of_epoch.append(tl)
         self.learningrateList.append(self.learningrate)
+        filename = self.resultsPath + '/' + self.model_name + '_Time_inference.csv' 
+        te = time.time()
+        if(filename):
+            with open(filename, 'a') as f:
+                f.write('\t%r %2.2f sec' % ('on_epoch_end', te-ts))
         return self.learningrate
 
     
@@ -486,8 +496,10 @@ class kFoldMetrics(Metrics):
         plt.savefig(filename, bbox_inches="tight")
         print("learning rate Plot written to:", filename)
 
-        filename = self.resultsPath + "/" + self.model_name +'learningrate.csv'
+        filename = self.resultsPath + "/" + self.model_name +'_learningrate.csv'
         np.savetxt(filename, np.asarray(self.learningrateList),delimiter='\n')
+        filename = self.resultsPath + "/" + self.model_name +'_loss.csv'
+        np.savetxt(filename, np.asarray(self.loss_end_of_epoch),delimiter='\n')
         # file = open(self.resultsPath + '/learningrate.csv', 'w+', newline ='')
         
         # file.truncate()
