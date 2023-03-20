@@ -56,7 +56,7 @@ def main(args):
         analyze.run()
 
         preprocess_dataset(args)
-
+        print("completed preprocessing")
         runtime = RunTime(args)
         runtime.run()
 
@@ -74,4 +74,60 @@ def main(args):
 
 if __name__ == "__main__":
     args = get_main_args()
+
+    aPath = '--xla_gpu_cuda_data_dir=/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/pkgs/cuda-nvcc-11.7.64-0'
+    #print(aPath)
+    os.environ['XLA_FLAGS'] = aPath
     main(args)
+    
+    
+
+# python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/subset_VF_dataset/dataset.json --processed-data /rsrch1/ip/rglenn1/data/subset_VF_dataset/numpy --results /rsrch1/ip/rglenn1/data/subset_VF_dataset/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 125
+
+
+#export XLA_FLAGS='--xla_gpu_cuda_data_dir=/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/pkgs/cuda-nvcc-11.7.64-0'
+
+
+#args.data = '/rsrch1/ip/rglenn1/data/subset_VF_dataset/dataset.json'
+#args.results = '/rsrch1/ip/rglenn1/data/subset_VF_dataset/results'
+#args.model='uunet'
+#args.pocket = True
+#args.xla = True
+#args.amp = True
+#args.patch_size=[256, 256, 32]
+#args.epochs = 125
+#args.exec_mode = True
+#args.train = True
+
+# Fix not finding the gpu
+#conda uninstall protobuf
+#
+#conda uninstall tensorflow
+# python 3.10, nvcc 11.6
+
+"""
+conda install -c nvidia/label/cuda-11.6.0 cuda-nvcc
+nvcc --version
+export CUDA_VISIBLE_DEVICES=0,1
+
+conda install -c "nvidia/label/cuda-11.6.0" cuda-runtime
+
+
+conda install -c conda-forge tensorflow==2.10
+python
+import tensorflow as tf
+tf.config.list_physical_devices()
+
+#[PhysicalDevice(name='/physical_device:CPU:0', device_type='CPU'), PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU'), PhysicalDevice(name='/physical_device:GPU:1', device_type='GPU'), PhysicalDevice(name='/physical_device:GPU:2', device_type='GPU'), PhysicalDevice(name='/physical_device:GPU:3', device_type='GPU'), PhysicalDevice(name='/physical_device:GPU:4', device_type='GPU'), PhysicalDevice(name='/physical_device:GPU:5', device_type='GPU'), PhysicalDevice(name='/physical_device:GPU:6', device_type='GPU')]
+
+export C_INCLUDE_PATH=/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/pkgs/libprotobuf-3.21.12-h3eb15da_0/include/::/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/pkgs/cuda-nvcc-11.6.55-h5758ece_0/include/:/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/pkgs/cuda-cudart-11.3.58-hc1aae59_0/include/:$C_INCLUDE_PATH
+export CPLUS_INCLUDE_PATH=/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/pkgs/libprotobuf-3.21.12-h3eb15da_0/include/::/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/pkgs/cuda-nvcc-11.6.55-h5758ece_0/include/:/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/pkgs/cuda-cudart-11.3.58-hc1aae59_0/include/:$CPLUS_INCLUDE_PATH
+
+
+pip3 install --upgrade --force-reinstall   --extra-index-url https://developer.download.nvidia.com/compute/redist --upgrade nvidia-dali-cuda110
+pip3 install --upgrade --force-reinstall  --extra-index-url https://developer.download.nvidia.com/compute/redist --upgrade nvidia-dali-tf-plugin-cuda110
+
+
+
+"""
+

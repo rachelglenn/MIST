@@ -104,12 +104,13 @@ def preprocess_example(config, image_list, mask):
     if config['use_nz_mask']:
         # Create non-zero mask from first image in image list
         nzmask = ants.image_read(image_list[0])
+        print("image", image_list[0])
         nzmask = ants.get_mask(nzmask, cleanup=0)
-
+  
         if training:
             # Crop mask according to nonzero mask
             mask = ants.crop_image(mask, nzmask)
-
+    print("Mask shape-------", mask.numpy().shape)
     images = list()
     for image_path in image_list:
         # Load image as ants image
@@ -131,23 +132,28 @@ def preprocess_example(config, image_list, mask):
             image = ants.crop_image(image, nzmask)
 
         images.append(image)
+        print("Image shape-------", image_path, image.numpy().shape)
 
     # Get dims of images
     if training:
         mask_npy = mask.numpy()
+        mask_npy = np.array(mask_npy/ np.amax(mask_npy),dtype=np.uint8)
+        print("numpy mask", np.amax(mask_npy), np.amin(mask_npy))
     else:
         mask_npy = None
 
     dims = images[0].numpy().shape
+
 
     if training:
         mask_onehot = np.zeros((*dims, len(config['labels'])))
 
         for j in range(len(config['labels'])):
             mask_onehot[..., j] = (mask_npy == config['labels'][j]).astype('float32')
+            print("mask non-zero",j,  np.count_nonzero((mask_npy == config['labels'][j]).astype('float32')))
     else:
         mask_onehot = None
-
+    
     # Apply windowing and normalization to images
     image_npy = np.zeros((*dims, len(image_list)))
     for j in range(len(image_list)):
@@ -194,7 +200,8 @@ def preprocess_dataset(args):
     else:
         class_weights = args.class_weights
         compute_weights = False
-
+    #print("RG fix compute_weights = False line 198 preprocess")
+    #compute_weights = False # RG fix for bug
     print('Preprocessing dataset...')
     for i in trange(len(df)):
         # Get paths to images for single patient
@@ -203,21 +210,25 @@ def preprocess_dataset(args):
         # Get list of image paths and segmentation mask
         image_list = list(patient.values())[2:len(patient)]
         mask = ants.image_read(patient['mask'])
-
+        print("Mask-----", patient['mask'])
         # Preprocess a single example
         image_npy, mask_npy, mask_onehot = preprocess_example(config, image_list, mask)
 
         # Compute class weights
         if compute_weights:
             for j in range(len(config['labels'])):
-                if config['labels'][j] == 0 and config['use_nz_mask']:
+                #if config['labels'][j] == 0 and config['use_nz_mask']:
+                if config['labels'][j] == 0:
+                    print("use first option")
                     fg_mask = (mask_onehot[..., 0] == 0).astype('int')
                     label_mask = (image_npy[..., 0] != 0).astype('int') - fg_mask
                 else:
+                    print("use second option", j, len(config['labels']))
                     label_mask = mask_onehot[..., j]
 
                 # Update class weights with number of voxels belonging to class
                 class_weights[j] += np.count_nonzero(label_mask)
+                print("class_weights non-zero", np.count_nonzero(label_mask))
 
         # Save image in npy format
         np.save(os.path.join(images_dir, '{}.npy'.format(patient['id'])), image_npy.astype(np.float32))
@@ -230,7 +241,9 @@ def preprocess_dataset(args):
 
     # Finalize class weights
     if compute_weights:
+        print("config labels",config['labels'], patient)
         den = (1. / len(config['labels'])) * (np.sum(1. / np.array(class_weights)))
+        print("den:", den)
         class_weights = [(1. / class_weights[j]) / den for j in range(len(config['labels']))]
         max_weight = np.max(class_weights)
         class_weights = [weight / max_weight for weight in class_weights]

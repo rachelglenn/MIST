@@ -53,7 +53,8 @@ class Analyze:
         data i/o pipeline. An example of where this would be useful is the
         BraTS dataset.
         """
-
+        #print("RG analyze line 56 removed check for nzmask")
+        #return False # RG put for troubleshooting
         print('Checking for non-zero mask...')
 
         image_vol_reduction = list()
@@ -74,12 +75,15 @@ class Analyze:
             cropped_dims = cropped_image.numpy().shape
 
             image_vol_reduction.append(1. - (np.prod(cropped_dims) / np.prod(full_dims)))
-
+            #print("image_vol_reduction", patient['id'], 1. - (np.prod(cropped_dims) / np.prod(full_dims)))
         mean_vol_reduction = np.mean(image_vol_reduction)
+        #print("mean_vol_reduction", patient, mean_vol_reduction)
         if np.mean(image_vol_reduction) >= 0.25:
             use_nz_mask = True
         else:
             use_nz_mask = False
+        
+        #use_nz_mask = False #RG have had issues with use_nz_mask
 
         return use_nz_mask
 
@@ -263,6 +267,7 @@ class Analyze:
         bad_data = list()
         for i in trange(len(self.df)):
             patient = self.df.iloc[i].to_dict()
+            
             mask_header = ants.image_header_info(patient['mask'])
 
             # Get list of image paths and segmentation mask

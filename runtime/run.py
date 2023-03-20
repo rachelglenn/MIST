@@ -25,15 +25,16 @@ from inference.sliding_window import sliding_window_inference
 from postprocess_preds.postprocess import Postprocess
 from runtime.utils import get_files_df, get_lr_schedule, get_optimizer, get_flip_axes, \
     evaluate_prediction, compute_results_stats, init_results_df, set_seed, set_tf_flags, set_visible_devices, \
-    set_memory_growth, set_amp, set_xla, hvd_init, get_test_df
+    set_memory_growth, set_amp, set_xla, get_test_df
 from data_loading.dali_loader import get_data_loader
-
+from kFoldMetrics import kFoldMetrics
 
 class RunTime:
 
     def __init__(self, args):
         # Read user defined parameters
         self.args = args
+        self.k_metrics = None
         with open(self.args.data, 'r') as file:
             self.data = json.load(file)
 
@@ -65,7 +66,7 @@ class RunTime:
         pbar = tqdm(total=num_patients)
         pred_temp_filename = os.path.join(self.args.results, 'predictions', 'train', 'raw', 'pred_temp.nii.gz')
         mask_temp_filename = os.path.join(self.args.results, 'predictions', 'train', 'raw', 'mask_temp.nii.gz')
-
+        print("Saving run predictions to:", os.path.join(self.args.results, 'predictions', 'train', 'raw'))
         for step, (image, _) in enumerate(ds.take(len(df))):
             patient = df.iloc[step].to_dict()
             image_list = list(patient.values())[2:len(patient)]
@@ -143,6 +144,33 @@ class RunTime:
         with open(self.config_file, 'w') as outfile:
             json.dump(self.config, outfile, indent=2)
 
+        params = {}
+        params['data'] = self.data
+        params['tta'] = self.args.tta
+        params['n_classes'] = self.n_classes
+        params['config_labels'] = self.config['labels'] #(0, 1]
+        params['sw_overlap'] = 0.5
+        params['blend_mode'] = "gaussian"
+        params['learning_rate'] = 0.001
+        params['labels'] = labels
+        params['patch_size'] = patch_size
+        params['loss'] = True
+        params['use_nz_mask'] = False
+        params['target_spacing'] = self.config['target_spacing']
+        params['min_component_size'] = 0
+        params['prediction_dir'] = os.path.join(self.args.results, 'prediction')
+        params['final_classes'] = self.config['labels']
+        params['best_model_name'] = os.path.join(self.args.results, 'models', 
+                                        '{}_best_model_split'.format(self.data['task']))
+           
+        params['current_model_name'] =  os.path.join(self.args.results, 'models', 'last',
+                                           '{}_last_model_split'.format(self.data['task']))
+        params['base_model_name'] = os.path.join(self.args.results, 'models', 'last',
+                                           '{}_base_model_split'.format(self.data['task']))
+        params['results_path'] = self.args.results
+
+        self.k_metrics = kFoldMetrics(params)
+
         # Start training loop
         for fold in self.args.folds:
             print('Starting fold {}...'.format(fold))
@@ -179,6 +207,7 @@ class RunTime:
 
             # Set up optimizer
             optimizer = get_optimizer(self.args)
+           
 
             # Get loss function
             if self.args.use_precomputed_weights:
@@ -220,6 +249,10 @@ class RunTime:
             val_loss = tf.keras.metrics.Mean('val_loss', dtype=tf.float32)
 
             def val_step(image, mask):
+                #print('shape',np.shape(mask), np.shape(image))
+                #print('sw_overlap',self.args.sw_overlap )
+                #print('blend_mode', self.args.blend_mode)
+                #print('patchsize', patch_size)
                 pred = sliding_window_inference(image,
                                                 n_class=self.n_classes,
                                                 roi_size=tuple(patch_size),
@@ -262,12 +295,15 @@ class RunTime:
 
                 if (global_step + 1) % self.args.steps_per_epoch == 0 and global_step > 0:
                     # Perform validation
+                    #self.k_metrics.compute_val_loss(patch_size, model, val_loader, val_images, val_loss)
+
                     for _, (val_image, val_mask) in enumerate(val_loader.take(len(val_images))):
                         val_step(val_image, val_mask)
                         progress_bar.update_val_bar()
-
+                        #self.k_metrics.compute_val_loss(patch_size, model, val_loader, val_images, val_loss, val_image, val_mask)
+                    
                     current_val_loss = val_loss.result().numpy()
-
+                    print('saving model', current_val_loss)
                     checkpoint.update(model, current_val_loss)
                     logs.update(current_epoch)
 
@@ -275,16 +311,19 @@ class RunTime:
                     current_epoch += 1
                     local_step = 1
                     gc.collect()
-
-            # End of training for fold
-
+            if self.args.optimizer == 'adam':
+                learning_rate = optimizer.learning_rate.numpy() # _decayed_lr(tf.float32)
+            # End of epoch training for fold
+            self.k_metrics.on_epoch_end(patch_size, model, val_loader, val_images, val_loss, learning_rate)
             # Save last model
             print('Training for fold {} complete...'.format(fold))
-            checkpoint.save_last_model(model)
-
-            K.clear_session()
-            del model, train_loader, val_loader
-            gc.collect()
+            print('saving model', best_model_path)
+            checkpoint.save_last_model(model, best_model_path + '/best/')
+            
+            # RG Moved 
+            #K.clear_session()
+            #del model, train_loader, val_loader
+            #gc.collect()
 
             # Run prediction on test set and write results to .nii.gz format
             # Prepare test set
@@ -294,6 +333,7 @@ class RunTime:
             test_labels = [labels[idx] for idx in test_splits[fold]]
             test_labels.sort()
 
+            
             test_loader = get_data_loader(imgs=test_images,
                                           lbls=test_labels,
                                           batch_size=1,
@@ -307,13 +347,16 @@ class RunTime:
 
             # print('Running inference on validation set...')
             self.predict_and_evaluate_val(best_model_path, test_df, test_loader)
-
+            self.k_metrics.on_kFold_end( model, test_df, test_loader)
+            
+            
             K.clear_session()
+            del model, train_loader, val_loader
             del test_loader
             gc.collect()
 
             # End of fold
-
+        self.k_metrics.on_training_end()
         K.clear_session()
         gc.collect()
         # End train function
@@ -341,7 +384,7 @@ class RunTime:
             set_xla()
 
         # Initialize horovod
-        hvd_init()
+        #hvd_init()
 
         # Set tf flags
         set_tf_flags()
@@ -353,7 +396,8 @@ class RunTime:
         self.results_df = compute_results_stats(self.results_df)
 
         # Write results to csv file
-        self.results_df.to_csv(os.path.join(self.args.results, 'results.csv'), index=False)
+        print("Saving run dice results to csv folder:", os.path.join(self.args.results, 'results_run.csv'))
+        self.results_df.to_csv(os.path.join(self.args.results, 'results_run.csv'), index=False)
 
         # Run post-processing
         postprocess = Postprocess(self.args)

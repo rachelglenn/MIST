@@ -90,7 +90,7 @@ def sliding_window_inference(
 
     Returns: Inferred tf.Tensor.
     """
-
+    #print("input", inputs.shape)
     dim = int(tf.rank(inputs)) - 2
     batch_size = inputs.shape[0]
     assert dim in [2, 3], "Only 2D and 3D data are supported"
@@ -139,6 +139,9 @@ def sliding_window_inference(
         slice_group = window_slices[window_group_start : window_group_start + sw_batch_size]
         windows = tf.stack([tf.slice(input_padded, begin=begin, size=size) for begin, size in slice_group])
         importance_map_part = importance_map[: windows.shape[0] * windows.shape[1]]
+        
+        #print('importantshape', importance_map_part.shape)
+        #print('window', windows.shape)
         preds = run_model(model, windows, importance_map_part, windows.shape[0], **kwargs)
         preds = tf.unstack(preds, axis=0)
         for s, pred in zip(slice_group, preds):

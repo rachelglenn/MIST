@@ -113,12 +113,28 @@ class Postprocess:
         mask_temp_filename = os.path.join(self.args.results, 'predictions', 'train',
                                           'postprocess', 'clean_mask', 'mask_temp.nii.gz')
 
-        print('Running morphological clean up...')
+        
+        #remove temp
+        # 
         predictions = os.listdir(self.source_dir)
+        print("Checking directory:", self.source_dir)
+        # remove temp
+            #RG added
+        try:
+            predictions.remove('pred_temp.nii.gz')
+            predictions.remove('mask_temp.nii.gz')
+        except:
+            pass
+        print('Running morphological clean up...', self.source_dir)
+        print('Saving AI training predictions to:', 
+                             os.path.join(self.args.results, 'predictions', 'train', 'postprocess', 'clean_mask'))
+                                          
         for j in trange(len(predictions)):
             # Get true mask and original_prediction
             patient_id = predictions[j].split('.')[0]
             raw_pred = ants.image_read(os.path.join(self.source_dir, predictions[j]))
+            #print('id', self.paths['id'])
+            #print('patient',  patient_id)
             original_mask = ants.image_read(self.paths.loc[self.paths['id'].astype(str) == patient_id].iloc[0]['mask'])
 
             new_pred = apply_clean_mask(raw_pred, original_mask, self.majority_label)
@@ -172,6 +188,13 @@ class Postprocess:
 
             print('Running connected components analysis for label {}...'.format(self.data['labels'][i]))
             predictions = os.listdir(self.source_dir)
+            #RG added
+            try:
+                predictions.remove('pred_temp.nii.gz')
+                predictions.remove('mask_temp.nii.gz')
+            except:
+                pass
+            print("Post processing Predicted images are saved to: ", os.path.join(self.args.results, 'predictions', 'train', 'postprocess'))
             for j in trange(len(predictions)):
                 # Get true mask and original_prediction
                 patient_id = predictions[j].split('.')[0]
@@ -235,7 +258,8 @@ class Postprocess:
         subprocess.call(cp_best_cmd, shell=True)
 
         # Write new results to csv
-        self.best_results_df.to_csv(os.path.join(self.args.results, 'results.csv'), index=False)
+        print("Saving postprocess dice results to csv folder:", os.path.join(self.args.results, 'results_post.csv'))
+        self.best_results_df.to_csv(os.path.join(self.args.results, 'results_post.csv'), index=False)
 
         # Update inferred parameters with post-processing method
         self.config['cleanup_mask'] = clean_mask

@@ -12,7 +12,7 @@ from functools import wraps
 
 import tensorflow as tf
 from tensorflow.keras import mixed_precision
-import horovod.tensorflow as hvd
+#import horovod.tensorflow as hvd
 
 from metrics.metrics import dice_sitk, hausdorff, surface_hausdorff
 
@@ -122,11 +122,12 @@ def get_lr_schedule(args):
 
 def get_optimizer(args):
     lr_schedule = get_lr_schedule(args)
-
+    print("using optimizer", args.optimizer)
     if args.optimizer == 'sgd':
         optimizer = tf.keras.optimizers.SGD(learning_rate=lr_schedule, momentum=args.momentum)
     elif args.optimizer == 'adam':
         optimizer = tf.optimizers.Adam(learning_rate=lr_schedule)
+        print('Learning rate: %f' % (optimizer.learning_rate.numpy()))
 
     if args.clip_norm:
         optimizer.global_clipnorm = args.clip_norm_max
@@ -167,8 +168,8 @@ def set_xla():
     tf.config.optimizer.set_jit(True)
 
 
-def hvd_init():
-    hvd.init()
+#def hvd_init():
+#    #hvd.init()
 
 
 def set_tf_flags():
@@ -186,7 +187,7 @@ def set_tf_flags():
 
     tf.config.optimizer.set_experimental_options({"remapping": False})
     tf.config.threading.set_intra_op_parallelism_threads(1)
-    tf.config.threading.set_inter_op_parallelism_threads(max(2, (multiprocessing.cpu_count() // hvd.size()) - 2))
+    #tf.config.threading.set_inter_op_parallelism_threads(max(2, (multiprocessing.cpu_count() // hvd.size()) - 2))
 
 
 def set_seed(seed):
@@ -213,7 +214,8 @@ def set_warning_levels():
 
 
 def is_main_process():
-    return hvd.rank() == 0
+    pass
+    #return hvd.rank() == 0
 
 
 def rank_zero_only(fn):

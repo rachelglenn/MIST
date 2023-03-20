@@ -1,4 +1,4 @@
-import horovod.tensorflow as hvd
+#import horovod.tensorflow as hvd
 import numpy as np
 import nvidia.dali.fn as fn
 import nvidia.dali.math as math
@@ -44,7 +44,7 @@ class GenericPipeline(Pipeline):
         super().__init__(
             batch_size=batch_size,
             num_threads=num_threads,
-            device_id=hvd.rank(),
+            device_id= 0, #hvd.rank(),
             seed=seed,
         )
 
@@ -78,6 +78,10 @@ class TrainPipeline(GenericPipeline):
     def load_data(self):
         img, lbl = self.input_x(name="ReaderX"), self.input_y(name="ReaderY")
         img, lbl = fn.reshape(img, layout="DHWC"), fn.reshape(lbl, layout="DHWC")
+        #print("RG dali_loader fix line 81")
+        #img, lbl = fn.reshape(img, layout="CDHW"), fn.reshape(lbl, layout="CDHW")
+
+     
         return img, lbl
 
     @staticmethod
@@ -181,8 +185,8 @@ def get_data_loader(imgs, lbls, batch_size, mode, **kwargs):
     if lbls is not None:
         assert len(imgs) == len(lbls), f"Got {len(imgs)} images but {len(lbls)} lables"
 
-    gpus = hvd.size()
-    device_id = hvd.rank()
+    gpus = 1 #hvd.size()
+    device_id = 0#hvd.rank()
 
     pipe_kwargs = {
         "num_gpus": gpus,
