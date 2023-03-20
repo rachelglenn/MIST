@@ -115,6 +115,9 @@ def preprocess_example(config, image_list, mask):
     for image_path in image_list:
         # Load image as ants image
         image = ants.image_read(image_path)
+        hinfo  = ants.image_header_info(image_path)
+        pclass = hinfo['pixelclass']
+        print("pclass", pclass)
 
         # Reorient image to RAI if not already in RAI
         image = ants.reorient_image2(image, "RAI")
@@ -138,7 +141,7 @@ def preprocess_example(config, image_list, mask):
     if training:
         mask_npy = mask.numpy()
         mask_npy = np.array(mask_npy/ np.amax(mask_npy),dtype=np.uint8)
-        print("numpy mask", np.amax(mask_npy), np.amin(mask_npy))
+        print("RG Line 141 in preprocess fixed bug", np.amax(mask_npy), np.amin(mask_npy))
     else:
         mask_npy = None
 
@@ -211,6 +214,9 @@ def preprocess_dataset(args):
         image_list = list(patient.values())[2:len(patient)]
         mask = ants.image_read(patient['mask'])
         print("Mask-----", patient['mask'])
+        hinfo  = ants.image_header_info(patient['mask'])
+        pclass = hinfo['pixelclass']
+        print("pclass mask", pclass)
         # Preprocess a single example
         image_npy, mask_npy, mask_onehot = preprocess_example(config, image_list, mask)
 

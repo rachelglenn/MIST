@@ -283,11 +283,18 @@ class RunTime:
             current_epoch = 1
             local_step = 1
             for global_step, (image, mask) in enumerate(train_loader):
+                image = tf.image.rgb_to_grayscale(image)
+                mask = tf.image.rgb_to_grayscale(mask)
+                print("image size----->", image.get_shape())
+                print("mask size----->", mask.get_shape())
                 if global_step >= total_steps:
                     break
 
                 if local_step == 1:
                     print('Fold {}: Epoch {}/{}'.format(fold, current_epoch, self.args.epochs))
+                #x_in = tf.identity(image)
+                #x_ = tf.placeholder(shape=[ shape[0], shape[1], shape[2], shape[3], dtype=tf.float32)
+                #x_out = sess.run(x_in, feed_dict={x_: image[:,:,:,:]})
 
                 train_step(image, mask)
                 progress_bar.update_train_bar()
