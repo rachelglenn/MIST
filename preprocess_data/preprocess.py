@@ -110,7 +110,8 @@ def preprocess_example(config, image_list, mask):
         if training:
             # Crop mask according to nonzero mask
             mask = ants.crop_image(mask, nzmask)
-    print("Mask shape-------", mask.numpy().shape)
+    test = mask.numpy()
+    print("Mask shape-------", test[2,2,2])
     images = list()
     for image_path in image_list:
         # Load image as ants image
@@ -135,7 +136,8 @@ def preprocess_example(config, image_list, mask):
             image = ants.crop_image(image, nzmask)
 
         images.append(image)
-        print("Image shape-------", image_path, image.numpy().shape)
+        test = image.numpy()
+        print("Image shape-------", image_path, test[1,1,1])
 
     # Get dims of images
     if training:
@@ -189,6 +191,8 @@ def preprocess_dataset(args):
         df = pd.read_csv(args.paths)
 
     # Create output directories if they do not exist
+    print("clearing out old numpy files: ", args.processed_data)
+    os.system('rm -rf ' + args.processed_data)
     images_dir = os.path.join(args.processed_data, 'images')
     create_empty_dir(images_dir)
 
