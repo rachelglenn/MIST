@@ -1,0 +1,1000 @@
+ 1007  grep -ir back_to_original_space .
+ 1008  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/subset_VF_dataset/dataset.json --processed-data /rsrch1/ip/rglenn1/data/subset_VF_dataset/numpy --results /rsrch1/ip/rglenn1/data/subset_VF_dataset/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 125 
+ 1009  gedit metrics
+ 1010  ls
+ 1011  mv metrics.py Metrics.py
+ 1012  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/subset_VF_dataset/dataset.json --processed-data /rsrch1/ip/rglenn1/data/subset_VF_dataset/numpy --results /rsrch1/ip/rglenn1/data/subset_VF_dataset/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 125 
+ 1013  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/subset_VF_dataset/dataset.json --processed-data /rsrch1/ip/rglenn1/data/subset_VF_dataset/numpy --results /rsrch1/ip/rglenn1/data/subset_VF_dataset/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 3 
+ 1014  gedit inference/sliding_window.py 
+ 1015  grep -ir argmax_and_fix_labels .
+ 1016  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/subset_VF_dataset/dataset.json --processed-data /rsrch1/ip/rglenn1/data/subset_VF_dataset/numpy --results /rsrch1/ip/rglenn1/data/subset_VF_dataset/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 3 
+ 1017  grep -ir tqdm .
+ 1018  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/subset_VF_dataset/dataset.json --processed-data /rsrch1/ip/rglenn1/data/subset_VF_dataset/numpy --results /rsrch1/ip/rglenn1/data/subset_VF_dataset/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 3 
+ 1019  grep -ir sw_overlap .
+ 1020  gedit README.md 
+ 1021  grep -ir blend_mode .
+ 1022  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/subset_VF_dataset/dataset.json --processed-data /rsrch1/ip/rglenn1/data/subset_VF_dataset/numpy --results /rsrch1/ip/rglenn1/data/subset_VF_dataset/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 3 
+ 1023  grep -ir argmax_and_fix_labels .
+ 1024  ls
+ 1025  find . -iname '*config*'
+ 1026  find . -iname '*.json'
+ 1027  find ../../../data/liver_33_patients/ -iname 'config.json'
+ 1028  gedit ../../../data/liver_33_patients/results/config.json
+ 1029  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/subset_VF_dataset/dataset.json --processed-data /rsrch1/ip/rglenn1/data/subset_VF_dataset/numpy --results /rsrch1/ip/rglenn1/data/subset_VF_dataset/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 3 
+ 1030  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/subset_VF_dataset/dataset.json --processed-data /rsrch1/ip/rglenn1/data/subset_VF_dataset/numpy --results /rsrch1/ip/rglenn1/data/subset_VF_dataset/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1 
+ 1031  ls /rsrch1/ip/rglenn1/data/subset_VF_dataset/results//rsrch1/ip/rglenn1/data/subset_VF_dataset/results/models/last/
+ 1032  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/subset_VF_dataset/dataset.json --processed-data /rsrch1/ip/rglenn1/data/subset_VF_dataset/numpy --results /rsrch1/ip/rglenn1/data/subset_VF_dataset/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1 
+ 1033  ls /rsrch1/ip/rglenn1/data/subset_VF_dataset/results//rsrch1/ip/rglenn1/data/subset_VF_dataset/results/models/last/
+ 1034  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/subset_VF_dataset/dataset.json --processed-data /rsrch1/ip/rglenn1/data/subset_VF_dataset/numpy --results /rsrch1/ip/rglenn1/data/subset_VF_dataset/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1 
+ 1035  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/subset_VF_dataset/dataset.json --processed-data /rsrch1/ip/rglenn1/data/subset_VF_dataset/numpy --results /rsrch1/ip/rglenn1/data/subset_VF_dataset/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1 --folds 1
+ 1036  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/subset_VF_dataset/dataset.json --processed-data /rsrch1/ip/rglenn1/data/subset_VF_dataset/numpy --results /rsrch1/ip/rglenn1/data/subset_VF_dataset/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1 --folds 2
+ 1037  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/subset_VF_dataset/dataset.json --processed-data /rsrch1/ip/rglenn1/data/subset_VF_dataset/numpy --results /rsrch1/ip/rglenn1/data/subset_VF_dataset/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 4 --folds 3
+ 1038  ls /rsrch1/ip/rglenn1/data/subset_VF_dataset/results/predictions/train/raw
+ 1039  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/subset_VF_dataset/dataset.json --processed-data /rsrch1/ip/rglenn1/data/subset_VF_dataset/numpy --results /rsrch1/ip/rglenn1/data/subset_VF_dataset/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 4 --folds 3
+ 1040  ython main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/subset_VF_dataset/dataset.json --processed-data /rsrch1/ip/rglenn1/data/subset_VF_dataset/numpy --results /rsrch1/ip/rglenn1/data/subset_VF_dataset/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 30 --folds 3
+ 1041  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/subset_VF_dataset/dataset.json --processed-data /rsrch1/ip/rglenn1/data/subset_VF_dataset/numpy --results /rsrch1/ip/rglenn1/data/subset_VF_dataset/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 30 --folds 3
+ 1042  grep -ir def get_lr_schedule(args):
+ 1043  grep -ir def get_lr_schedule .
+ 1044  grep -ir get_lr_schedule .
+ 1045  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/subset_VF_dataset/dataset.json --processed-data /rsrch1/ip/rglenn1/data/subset_VF_dataset/numpy --results /rsrch1/ip/rglenn1/data/subset_VF_dataset/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 30 --folds 3
+ 1046  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/subset_VF_dataset/dataset.json --processed-data /rsrch1/ip/rglenn1/data/subset_VF_dataset/numpy --results /rsrch1/ip/rglenn1/data/subset_VF_dataset/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1 --folds 3
+ 1047  python main.py --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 125
+ 1048  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 125
+ 1049  grep -ir 2399825
+ 1050  grep -ir 2399825 .
+ 1051  ls
+ 1052  grep -ir 2399825 /rsrch1/ip/rglenn1/data/liver_33_patients/
+ 1053  gedit /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json
+ 1054  ls /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json | grep -i2399825
+ 1055  ls /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json | grep -i 2399825
+ 1056  ls /rsrch1/ip/rglenn1/data/liver_33_patients/Processed | grep -i 2399825
+ 1057  ls /rsrch1/ip/rglenn1/data/liver_33_patients/Processed
+ 1058  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 125
+ 1059  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 5
+ 1060  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 125
+ 1061  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 175
+ 1062  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 125
+ 1063  gedit /rsrch1/ip/rglenn1/data/liver_33_patients/results/results_post.csv
+ 1064  ls
+ 1065  gedit create_dataset_nifti.py 
+ 1066  python create_dataset_nifti.py 
+ 1067  python
+ 1068  \
+ 1069  gedit notes.txt
+ 1070  itksnap
+ 1071  find . -inmae mask_liver.nii.gz
+ 1072  find . -iname mask_liver.nii.gz
+ 1073  find --help
+ 1074  find . mask_liver.nii.gz
+ 1075  find . -name mask_liver.nii.gz | xargs mv {} 
+ 1076  mv ./SUB-109456101725_Ax_LAVA_Post_Delay/mask_liver.nii.gz ./SUB-109456101725_Ax_LAVA_Post_Delay/mask_Liver.nii.gz
+ 1077  mv ./SUB-108872884202_WATER__Ax_DISCO_Dyn_Mph_3_BH/mask_liver.nii.gz ./SUB-108872884202_WATER__Ax_DISCO_Dyn_Mph_3_BH/mask_Liver.nii.gz
+ 1078  pwd
+ 1079  ls /rsrch1/ip/rglenn1/data/PA14-0646/dataset_PA.csv 
+ 1080  itksnap
+ 1081  pwd
+ 1082  gedit import_rg.py
+ 1083  ls
+ 1084  cd 3-CT1/
+ 1085  ls
+ 1086  cd DICOM/
+ 1087  ls
+ 1088  pwd
+ 1089  ls /rsrch1/ip/rglenn1/data/liver_33_patients/33_patient_dataset_MRI_Livercsv 
+ 1090  mv /rsrch1/ip/rglenn1/data/liver_33_patients/33_patient_dataset_MRI_Livercsv /rsrch1/ip/rglenn1/data/liver_33_patients/33_patient_dataset_MRI_Liver.csv
+ 1091  pwd
+ 1092  ls
+ 1093  pwd
+ 1094  /bin/python /rsrch1/ip/rglenn1/segLiverWkspce/docker_mist/latest_MIST/kFoldMetrics.py
+ 1095  /bin/python /rsrch1/ip/rglenn1/segLiverWkspce/docker_mist/latest_MIST/runtime/run.py
+ 1096  source ../../../.bashrc_gpu4_rmg 
+ 1097  conda activate tf_gpu4_env
+ 1098  pip3 install dcmrtstruct2nii
+ 1099  pwd
+ 1100  cd ../
+ 1101  ls
+ 1102  cd ..
+ 1103  ls
+ 1104  mkdir 2023_therapy_lab2
+ 1105  mv Lab2.zip 2023_therapy_lab2/
+ 1106  cd 2023_therapy_lab2/
+ 1107  ls
+ 1108  nautilus .
+ 1109  jupyter notebook
+ 1110  cd ..
+ 1111  jupyter notebook
+ 1112  ls /rsrch1/ip/rglenn1/data/PA14-0646/dataset.json 
+ 1113  python main.py --data /rsrch1/ip/rglenn1/data/PA14-0646/dataset.json  --results /rsrch1/ip/rglenn1/data/PA14-0646/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 125
+ 1114  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/PA14-0646/dataset.json  --results /rsrch1/ip/rglenn1/data/PA14-0646/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 125
+ 1115  grep -ir "mask size----->" .
+ 1116  gedit ./runtime/run.py
+ 1117  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/PA14-0646/dataset.json  --results /rsrch1/ip/rglenn1/data/PA14-0646/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 125
+ 1118  grep -ir "image size----->" .
+ 1119  gedit ./runtime/run.py
+ 1120  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/PA14-0646/dataset.json  --results /rsrch1/ip/rglenn1/data/PA14-0646/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 125
+ 1121  grep -ir "image size----->" .
+ 1122  gedit ./runtime/run.py
+ 1123  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/PA14-0646/dataset.json  --results /rsrch1/ip/rglenn1/data/PA14-0646/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 125
+ 1124  ../../../vscode/VSCode-linux-x64/bin/code  /rsrch1/ip/rglenn1/segLiverWkspce/docker_mist/latest_MIST/runtime/run.py
+ 1125  ../../../vscode/VSCode-linux-x64/bin/code /rsrch1/ip/rglenn1/segLiverWkspce/docker_mist/latest_MIST/runtime/utils.py
+ 1126  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/PA14-0646/dataset.json  --results /rsrch1/ip/rglenn1/data/PA14-0646/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 3
+ 1127  ../../../vscode/VSCode-linux-x64/bin/code /rsrch1/ip/rglenn1/segLiverWkspce/docker_mist/latest_MIST/runtime/utils.py
+ 1128  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/PA14-0646/dataset.json  --results /rsrch1/ip/rglenn1/data/PA14-0646/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 3
+ 1129  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/PA14-0646/dataset.json  --results /rsrch1/ip/rglenn1/data/PA14-0646/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1130  python main.py --data /rsrch1/ip/rglenn1/data/PA14-0646/dataset.json  --results /rsrch1/ip/rglenn1/data/PA14-0646/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1131  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/PA14-0646/dataset.json  --results /rsrch1/ip/rglenn1/data/PA14-0646/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1132  nautilus /rsrch1/ip/rglenn1/segLiverWkspce/docker_mist/latest_MIST/numpy/images
+ 1133  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/PA14-0646/dataset.json  --results /rsrch1/ip/rglenn1/data/PA14-0646/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1134  nautilus /rsrch1/ip/rglenn1/segLiverWkspce/docker_mist/latest_MIST/numpy/images
+ 1135  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/PA14-0646/dataset.json  --results /rsrch1/ip/rglenn1/data/PA14-0646/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1136  nautilus /rsrch1/ip/rglenn1/segLiverWkspce/docker_mist/latest_MIST/numpy/images
+ 1137  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/PA14-0646/dataset.json  --results /rsrch1/ip/rglenn1/data/PA14-0646/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1138  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/PA14-0646/dataset.json  --results /rsrch1/ip/rglenn1/data/PA14-0646/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 125
+ 1139  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/PA14-0646/dataset.json  --results /rsrch1/ip/rglenn1/data/PA14-0646/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1140  clear
+ 1141  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/PA14-0646/dataset.json  --results /rsrch1/ip/rglenn1/data/PA14-0646/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1142  itksnap
+ 1143  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/PA14-0646/dataset.json  --results /rsrch1/ip/rglenn1/data/PA14-0646/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1144  itksnap
+ 1145  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/PA14-0646/dataset.json  --results /rsrch1/ip/rglenn1/data/PA14-0646/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 125
+ 1146  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/PA14-0646/dataset.json  --results /rsrch1/ip/rglenn1/data/PA14-0646/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1147  ../../../vscode/VSCode-linux-x64/bin/code /rsrch1/ip/rglenn1/segLiverWkspce/docker_mist/latest_MIST/postprocess_preds/postprocess.py
+ 1148  ls /rsrch1/ip/rglenn1/data/PA14-0646/results/results_run.csv 
+ 1149  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/PA14-0646/dataset.json  --results /rsrch1/ip/rglenn1/data/PA14-0646/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1150  python main.py  --data /rsrch1/ip/rglenn1/data/PA14-0646/dataset.json  --results /rsrch1/ip/rglenn1/data/PA14-0646/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1151  python main.py  --data /rsrch1/ip/rglenn1/data/PA14-0646/dataset.json  --results /rsrch1/ip/rglenn1/data/PA14-0646/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 125
+ 1152  python predict.py --models /rsrch1/ip/rglenn1/data/PA14-0646/results/models --config /rsrch1/ip/rglenn1/data/PA14-0646/results/config.json --data /rsrch1/ip/rglenn1/data/liver_33_patients/train_paths.csv --output /rsrch1/ip/rglenn1/data/liver_33_patients/results_PA14-0646_33_patients
+ 1153  python predict.py --models /rsrch1/ip/rglenn1/data/PA14-0646/results/models --config /rsrch1/ip/rglenn1/data/PA14-0646/results/config.json --data /rsrch1/ip/rglenn1/data/liver_33_patients/paths.csv --output /rsrch1/ip/rglenn1/data/liver_33_patients/results_PA14-0646_33_patients
+ 1154  ls /rsrch1/ip/rglenn1/data/liver_33_patients/paths.csv
+ 1155  python predict.py --models /rsrch1/ip/rglenn1/data/PA14-0646/results/models --config /rsrch1/ip/rglenn1/data/PA14-0646/results/config.json --data /rsrch1/ip/rglenn1/data/liver_33_patients/paths.csv --output /rsrch1/ip/rglenn1/data/liver_33_patients/results_PA14-0646_33_patients
+ 1156  ../../../vscode/VSCode-linux-x64/bin/code  /rsrch1/ip/rglenn1/segLiverWkspce/docker_mist/latest_MIST/predict.py
+ 1157  python predict.py --models /rsrch1/ip/rglenn1/data/PA14-0646/results/models --config /rsrch1/ip/rglenn1/data/PA14-0646/results/config.json --data /rsrch1/ip/rglenn1/data/liver_33_patients/paths.csv --output /rsrch1/ip/rglenn1/data/liver_33_patients/results_PA14-0646_33_patients
+ 1158  ls /rsrch1/ip/rglenn1/data/PA14-0646/results/models/best/
+ 1159  ls /rsrch1/ip/rglenn1/data/PA14-0646/results/models/best/vf_best_model_split_0/
+ 1160  ls /rsrch1/ip/rglenn1/data/PA14-0646/results/models/best/ -al
+ 1161  ls /rsrch1/ip/rglenn1/data/PA14-0646/results/models/best/vf_best_model_split_4/
+ 1162  python predict.py --models /rsrch1/ip/rglenn1/data/PA14-0646/results/models/best/vf_best_model_split_4/ --config /rsrch1/ip/rglenn1/data/PA14-0646/results/config.json --data /rsrch1/ip/rglenn1/data/liver_33_patients/paths.csv --output /rsrch1/ip/rglenn1/data/liver_33_patients/results_PA14-0646_33_patients
+ 1163  python predict.py --models /rsrch1/ip/rglenn1/data/PA14-0646/results/models/best/vf_best_model_split_4/best --config /rsrch1/ip/rglenn1/data/PA14-0646/results/config.json --data /rsrch1/ip/rglenn1/data/liver_33_patients/paths.csv --output /rsrch1/ip/rglenn1/data/liver_33_patients/results_PA14-0646_33_patients
+ 1164  ls /rsrch1/ip/rglenn1/data/PA14-0646/results/models/best/vf_best_model_split_4/best/assets/
+ 1165  ls /rsrch1/ip/rglenn1/data/PA14-0646/results/models/best/vf_best_model_split_4/best/
+ 1166  ../../../vscode/VSCode-linux-x64/bin/code  /rsrch1/ip/rglenn1/segLiverWkspce/docker_mist/latest_MIST/inference/inference.py
+ 1167  ../../../vscode/VSCode-linux-x64/bin/code  /rsrch1/ip/rglenn1/segLiverWkspce/docker_mist/latest_MIST/inference/main_inference.py 
+ 1168  python predict.py --models /rsrch1/ip/rglenn1/data/PA14-0646/results/models/best/vf_best_model_split_4/best --config /rsrch1/ip/rglenn1/data/PA14-0646/results/config.json --data /rsrch1/ip/rglenn1/data/liver_33_patients/paths.csv --output /rsrch1/ip/rglenn1/data/liver_33_patients/results_PA14-0646_33_patients
+ 1169  python predict.py --models /rsrch1/ip/rglenn1/data/PA14-0646/results/models/best/vf_best_model_split_4/ --config /rsrch1/ip/rglenn1/data/PA14-0646/results/config.json --data /rsrch1/ip/rglenn1/data/liver_33_patients/paths.csv --output /rsrch1/ip/rglenn1/data/liver_33_patients/results_PA14-0646_33_patients
+ 1170  grep -ir save .
+ 1171  ../../../vscode/VSCode-linux-x64/bin/code  runtime/checkpoints.py 
+ 1172  python main.py  --data /rsrch1/ip/rglenn1/data/PA14-0646/dataset.json  --results /rsrch1/ip/rglenn1/data/PA14-0646/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 125
+ 1173  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/PA14-0646/dataset.json  --results /rsrch1/ip/rglenn1/data/PA14-0646/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 125
+ 1174  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/PA14-0646/dataset.json  --results /rsrch1/ip/rglenn1/data/PA14-0646/results --model unet --pocket --xla --amp --patch-size 256 256 32 --epochs 125
+ 1175  ls /rsrch1/ip/rglenn1/data/PA14-0646/results/models/last/vf_last_model_split_3
+ 1176  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/PA14-0646/dataset.json  --results /rsrch1/ip/rglenn1/data/PA14-0646/results --model unet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1177  ls /rsrch1/ip/rglenn1/data/PA14-0646/results/models/best/vf_best_model_split_0/best//rsrch1/ip/rglenn1/data/PA14-0646/results/models/best/vf_best_model_split_0/best//weights_checkpoint
+ 1178  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/PA14-0646/dataset.json  --results /rsrch1/ip/rglenn1/data/PA14-0646/results --model unet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1179  ls /rsrch1/ip/rglenn1/data/PA14-0646/results/models/best/vf_best_model_split_0/best//weights_checkpoint
+ 1180  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/PA14-0646/dataset.json  --results /rsrch1/ip/rglenn1/data/PA14-0646/results --model unet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1181  ls
+ 1182  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/PA14-0646/dataset.json  --results /rsrch1/ip/rglenn1/data/PA14-0646/results --model unet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1183  python predict.py --models /rsrch1/ip/rglenn1/data/PA14-0646/results/models/best/vf_best_model_split_4/ --config /rsrch1/ip/rglenn1/data/PA14-0646/results/config.json --data /rsrch1/ip/rglenn1/data/liver_33_patients/paths.csv --output /rsrch1/ip/rglenn1/data/liver_33_patients/results_PA14-0646_33_patients
+ 1184  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/PA14-0646/dataset.json  --results /rsrch1/ip/rglenn1/data/PA14-0646/results --model unet --pocket --xla --amp --patch-size 256 256 32 --epochs 125
+ 1185  python predict.py --models /rsrch1/ip/rglenn1/data/PA14-0646/results/models/best/vf_best_model_split_4/ --config /rsrch1/ip/rglenn1/data/PA14-0646/results/config.json --data /rsrch1/ip/rglenn1/data/liver_33_patients/paths.csv --output /rsrch1/ip/rglenn1/data/liver_33_patients/results_PA14-0646_33_patients
+ 1186  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/PA14-0646/dataset.json  --results /rsrch1/ip/rglenn1/data/PA14-0646/results --model unet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1187  python predict.py --models /rsrch1/ip/rglenn1/data/PA14-0646/results/models/best/vf_best_model_split_4/ --config /rsrch1/ip/rglenn1/data/PA14-0646/results/config.json --data /rsrch1/ip/rglenn1/data/liver_33_patients/paths.csv --output /rsrch1/ip/rglenn1/data/liver_33_patients/results_PA14-0646_33_patients
+ 1188  cat /rsrch1/ip/rglenn1/data/liver_33_patients/paths.csv
+ 1189  python main.py --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 125
+ 1190  python predict.py --models /rsrch1/ip/rglenn1/data/PA14-0646/results/models/best/vf_best_model_split_4/ --config /rsrch1/ip/rglenn1/data/PA14-0646/results/config.json --data /rsrch1/ip/rglenn1/data/liver_33_patients/paths.csv --output /rsrch1/ip/rglenn1/data/liver_33_patients/results_PA14-0646_33_patients
+ 1191  python main.py --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 125
+ 1192  ls /rsrch1/ip/rglenn1/segLiverWkspce/docker_mist/latest_MIST/numpy/
+ 1193  ls /rsrch1/ip/rglenn1/segLiverWkspce/docker_mist/latest_MIST/numpy/images/
+ 1194  python main.py --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 125
+ 1195  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 125
+ 1196  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 128 128 32 --epochs 125
+ 1197  python main.py --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 125
+ 1198  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 64 64 32 --epochs 125
+ 1199  ython main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 64 64 16 --epochs 125
+ 1200  nvcc --version
+ 1201  conda list | grep -i tensorflow
+ 1202  ython main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 128 128 16 --epochs 125
+ 1203  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 128 128 16 --epochs 125
+ 1204  nvidia-smi
+ 1205  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 128 128 16 --epochs 125
+ 1206  grep -ir set_memory_growth .
+ 1207  ls ~/.nv/
+ 1208  rm -rf ~/.nv/
+ 1209  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 128 128 16 --epochs 125
+ 1210  conda list | grep -i tensorflow
+ 1211  which python
+ 1212  find /rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/envs/tf_gpu4_env/ -iname cudnn.h
+ 1213  cat /rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/envs/tf_gpu4_env/  | grep CUDNN_MAJOR -A 2
+ 1214  cat /rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/envs/tf_gpu4_env/include/cudnn.h  | grep CUDNN_MAJOR -A 2
+ 1215  cat /rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/envs/tf_gpu4_env/include/cudnn.h  | grep CUDNN_MAJOR 
+ 1216  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 128 128 8 --epochs 125
+ 1217  git status
+ 1218  git remote -vv
+ 1219  git branch
+ 1220  git 
+ 1221  ls
+ 1222  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 128 128 8 --epochs 125
+ 1223  python
+ 1224  find . -iname "*header*"
+ 1225  find segLiverWkspce/ -iname "*header*"
+ 1226  find quantumSegmentation/ -iname "*header*"
+ 1227  gedit quantumSegmentation/MICO_v0/fixheader.py
+ 1228  source .bashrc_gpu4_rmg 
+ 1229  conda create -n dicomnifti
+ 1230  conda create -n dicomnifti python=3.8
+ 1231  conda activate dicomnifti
+ 1232  pip3 install dcmrtstruct2nii
+ 1233  cd /rsrch1/ip/rglenn1/segLiverWkspce/docker_mist/latest_MIST
+ 1234  python create_dataset_nifti.py 
+ 1235  pip3 install cleo
+ 1236  echo $LD_LIBRARY_PATH 
+ 1237  export LD_LIBRARY_PATH=/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/envs/dicomnifti/lib/
+ 1238  python create_dataset_nifti.py 
+ 1239  pip3 install cleo==0.6.1
+ 1240  pip3 install cleo==0.7.2
+ 1241  python create_dataset_nifti.py 
+ 1242  dcmrtstruct2nii --help
+ 1243  python create_dataset_nifti.py 
+ 1244  python
+ 1245  python create_dataset_nifti.py 
+ 1246  pip3 install pandas==
+ 1247  python create_dataset_nifti.py 
+ 1248  gedit PA14-0646-nifti.csv 
+ 1249  python create_dataset_nifti.py 
+ 1250  clear
+ 1251  python create_dataset_nifti.py 
+ 1252  python
+ 1253  python create_dataset_nifti.py 
+ 1254  python
+ 1255  cp ../../MISTRG/mist/kFoldMetrics.py  .
+ 1256  gedit kFoldMetrics.py 
+ 1257  gedit /rsrch1/ip/rglenn1/data/subset_VF_dataset/results/unet_dice_results.csv
+ 1258  python create_dataset_nifti.py 
+ 1259  gedit /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json
+ 1260  python create_dataset_nifti.py 
+ 1261  gedit create_dataset_nifti
+ 1262  gedit create_dataset_nifti.py 
+ 1263  python create_dataset_nifti.py 
+ 1264  itksnap
+ 1265  python create_dataset_nifti.py 
+ 1266  history | grep -i wide
+ 1267  ls
+ 1268  cd /rsrch1/ip/rglenn1/data
+ 1269  ls
+ 1270  nautilus .
+ 1271  pwd
+ 1272  cd segLiverWkspce/docker_mist/latest_MIST/
+ 1273  gedit kFoldMetrics.py 
+ 1274  ../../../vscode/VSCode-linux-x64/bin/code .
+ 1275  cp ../../MISTRG/mist/metrics.py 
+ 1276  cp ../../MISTRG/mist/metrics.py .
+ 1277  gedit /rsrch1/ip/rglenn1/data/subset_VF_dataset/results/unet_dice_results.csv
+ 1278  gedit /rsrch1/ip/rglenn1/data/subset_VF_dataset/results/unet_dice_performance.csv
+ 1279  nautilus /rsrch1/ip/rglenn1/data/subset_VF_dataset/results/
+ 1280  gedit ../../../data/liver_33_patients/dataset.json 
+ 1281  gedit ../../../data/liver_33_patients/paths.csv 
+ 1282  nautilus /rsrch1/ip/rglenn1/data/liver_33_patients/results/predictions/train/raw
+ 1283  nautilus /rsrch1/ip/rglenn1/data/new_liver_dataset/PA14-0646//
+ 1284  itksnap 
+ 1285  itksnap
+ 1286  history | grep -i wide
+ 1287  nautilus /rsrch1/ip/rglenn1/data
+ 1288  itksnap
+ 1289  cd ..
+ 1290  ls
+ 1291  cd data
+ 1292  ls
+ 1293  mkdir stackedImages
+ 1294  mv rglenn1-20230502_131001.zip stackedImages/
+ 1295  cd stackedImages/
+ 1296  ls
+ 1297  nautilus .
+ 1298  ls /rsrch1/ip/mebadawy/github/visceralseg/Processed/2178251/image.nii.gz 
+ 1299  itksnap
+ 1300  ls /rsrch1/ip/mebadawy/github/visceralseg/Processed/2178251/image_Eq_1.nii.gz 
+ 1301  itksnap
+ 1302  ls /rsrch1/ip/mebadawy/github/visceralseg/Processed/2178251/
+ 1303  ls /rsrch1/ip/mebadawy/github/visceralseg/Processed/
+ 1304  ls /rsrch1/ip/mebadawy/github/visceralseg/Processed/2178251.train.nii.gz 
+ 1305  itksnap
+ 1306  gedit /rsrch1/ip/rglenn1/segLiverWkspce/docker_mist/latest_MIST/create_dataset_nifti.py
+ 1307  python
+ 1308  ls
+ 1309  cd PA15-0091/
+ 1310  ls
+ 1311  cd 1227-0151/
+ 1312  python stacked_images.py
+ 1313  ls
+ 1314  cd /rsrch1/ip/rglenn1/data/PA15-0091
+ 1315  ls
+ 1316  python stacked_images.py 
+ 1317  ls /rsrch1/ip/rglenn1/data/stackedImages/PA15-0091/2178251
+ 1318  mkdir /rsrch1/ip/rglenn1/data/stackedImages/PA15-0091/2178251
+ 1319  python stacked_images.py 
+ 1320  ls /rsrch1/ip/rglenn1/data/stackedImages/PA15-0091/2178251
+ 1321  python stacked_images.py 
+ 1322  ls /rsrch1/ip/rglenn1/data/stackedImages/PA15-0091/2178251_1.nii.gz
+ 1323  ls /rsrch1/ip/rglenn1/data/stackedImages/PA15-0091/2178251_2.nii.gz
+ 1324  itksnap
+ 1325  python stacked_images.py 
+ 1326  itksnap
+ 1327  python stacked_images.py 
+ 1328  itksnap
+ 1329  python stacked_images.py 
+ 1330  itksnap
+ 1331  which c3d
+ 1332  pip3 install c3d
+ 1333  python stacked_images.py 
+ 1334  which c3d
+ 1335  module list
+ 1336  which c3d
+ 1337  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/rsrch1/ip/rglenn1/support_packages/c3d-1.0.0-Linux-x86_64/bin
+ 1338  export PATH=$PATH:/rsrch1/ip/rglenn1/support_packages/c3d-1.0.0-Linux-x86_64/bin
+ 1339  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/rsrch1/ip/rglenn1/support_packages/c3d-1.0.0-Linux-x86_64/lib
+ 1340  which c3d
+ 1341  python stacked_images.py 
+ 1342  itksnap
+ 1343  python stacked_images.py 
+ 1344  itksnap
+ 1345  gedit /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json
+ 1346  gedit /rsrch1/ip/rglenn1/data/PA14-0646/dataset.json
+ 1347  killall -9 python
+ 1348  itksnap 
+ 1349  cd segLiverWkspce/docker_mist/latest_MIST/
+ 1350  grep -ir class_weights .
+ 1351  cd segLiverWkspce/docker_mist/latest_MIST/
+ 1352  itksnap 
+ 1353  gedit main.py 
+ 1354  itksnap
+ 1355  gedit create_dataset_nifti
+ 1356  gedit create_dataset_nifti.py
+ 1357  itksnap
+ 1358  killall -9 python
+ 1359  itksnap
+ 1360  history | grep -i wide
+ 1361  cd ../../
+ 1362  cd ../2023_therapy_lab2/
+ 1363  pwd
+ 1364  ls /rsrch1/ip/rglenn1/2023_therapy_lab2/Homework_electron_MU
+ 1365  gedit /rsrch1/ip/rglenn1/data/PA14-0646/PA14-0646-dicom.csv
+ 1366  cd ../data/PA14-0646/
+ 1367  ls
+ 1368  pwd
+ 1369  source ../../.bashrc_gpu4_rmg 
+ 1370  conda info --env
+ 1371  conda activate dicomnifti
+ 1372  cd ..
+ 1373  cd PA14-0646/
+ 1374  git clone https://github.com/rordenlab/dcm2niix
+ 1375  cd dcm2niix/
+ 1376  make
+ 1377  ls
+ 1378  cd dcm2niix/
+ 1379  make
+ 1380  cd ../console/
+ 1381  make
+ 1382  ls
+ 1383  ./dcm2niix /rsrch1/ip/rglenn1/data/stackedImages/PA15-0091/1227-0151/1227-0151-2222-3686/3-CT1/DICOM -o 
+ 1384  ls
+ 1385  ./dcm2niix /rsrch1/ip/rglenn1/data/stackedImages/PA15-0091/1227-0151/1227-0151-2222-3686/3-CT1/DICOM -o  /rsrch1/ip/rglenn1/data/stackedImages/PA15-0091/
+ 1386  la /rsrch1/ip/rglenn1/data/stackedImages/PA15-0091/
+ 1387  ls /rsrch1/ip/rglenn1/data/stackedImages/PA15-0091/
+ 1388  ls
+ 1389  ./dcm2niix /rsrch1/ip/rglenn1/data/stackedImages/PA15-0091/1227-0151/1227-0151-2222-3686/3-CT1/DICOM
+ 1390  ls /rsrch1/ip/rglenn1/data/stackedImages/PA15-0091/1227-0151/1227-0151-2222-3686/3-CT1/DICOM/
+ 1391  ./dcm2niix -h
+ 1392  ./dcm2niix -z /rsrch1/ip/rglenn1/data/stackedImages/PA15-0091/1227-0151/1227-0151-2222-3686/3-CT1/DICOM
+ 1393  ./dcm2niix -z y /rsrch1/ip/rglenn1/data/stackedImages/PA15-0091/1227-0151/1227-0151-2222-3686/3-CT1/DICOM
+ 1394  conda install -c conda-forge pigz 
+ 1395  ./dcm2niix -z y /rsrch1/ip/rglenn1/data/stackedImages/PA15-0091/1227-0151/1227-0151-2222-3686/3-CT1/DICOM
+ 1396  which gzip
+ 1397  gzip /rsrch1/ip/rglenn1/data/stackedImages/PA15-0091/1227-0151/1227-0151-2222-3686/3-CT1/DICOM/DICOM_6.16_CT_CHST_ABD_PELVIS_WO_&_W_IVCON_40_DFOV_AND_BELOW_10-18-16_20170905125640_3c.nii
+ 1398  ls /rsrch1/ip/rglenn1/data/stackedImages/PA15-0091/1227-0151/1227-0151-2222-3686/3-CT1/DICOM/DICOM_6.16_CT_CHST_ABD_PELVIS_WO_&_W_IVCON_40_DFOV_AND_BELOW_10-18-16_20170905125640_3c.nii
+ 1399  ls /rsrch1/ip/rglenn1/data/stackedImages/PA15-0091/1227-0151/1227-0151-2222-3686/3-CT1/DICOM/DICOM_6.16_CT_CHST_ABD_PELVIS_WO_&_W_IVCON_40_DFOV_AND_BELOW_10-18-16_20170905125640_3b.nii.gz
+ 1400  itksnap
+ 1401  ./dcm2niix -z y /rsrch1/ip/rglenn1/data/stackedImages/PA15-0091/1227-0151/1227-0151-2222-3686/3-CT2/DICOM
+ 1402  gzip /rsrch1/ip/rglenn1/data/stackedImages/PA15-0091/1227-0151/1227-0151-2222-3686/3-CT2/DICOM/DICOM_6.16_CT_CHST_ABD_PELVIS_WO_&_W_IVCON_40_DFOV_AND_BELOW_10-18-16_20170905125640_3.nii
+ 1403  ls /rsrch1/ip/rglenn1/data/stackedImages/PA15-0091/1227-0151/1227-0151-2222-3686/3-CT2/DICOM/
+ 1404  ls /rsrch1/ip/rglenn1/data/stackedImages/PA15-0091/1227-0151/1227-0151-2222-3686/3-CT2/DICOM/DICOM_6.16_CT_CHST_ABD_PELVIS_WO_&_W_IVCON_40_DFOV_AND_BELOW_10-18-16_20170905125640_3.nii.gz
+ 1405  itksnap
+ 1406  ./dcm2niix -z y /rsrch1/ip/rglenn1/data/stackedImages/PA15-0091/1227-0151/1227-0151-2222-3686/3-CT3/DICOM
+ 1407  gzip rsrch1/ip/rglenn1/data/stackedImages/PA15-0091/1227-0151/1227-0151-2222-3686/3-CT3/DICOM/DICOM_6.16_CT_CHST_ABD_PELVIS_WO_&_W_IVCON_40_DFOV_AND_BELOW_10-18-16_20170905125640_3.nii
+ 1408  ls /rsrch1/ip/rglenn1/data/stackedImages/PA15-0091/1227-0151/1227-0151-2222-3686/3-CT3/DICOM/
+ 1409  ls /rsrch1/ip/rglenn1/data/stackedImages/PA15-0091/1227-0151/1227-0151-2222-3686/3-CT3/DICOM/DICOM_6.16_CT_CHST_ABD_PELVIS_WO_&_W_IVCON_40_DFOV_AND_BELOW_10-18-16_20170905125640_3.nii.gz
+ 1410  itksnap
+ 1411  cd ..
+ 1412  ls
+ 1413  cd cc
+ 1414  cd ..
+ 1415  cd quantumSegmentation/
+ 1416  ls
+ 1417  mkdir complex
+ 1418  cd complex/
+ 1419  git clone https://github.com/AghdamAmir/3D-UNet
+ 1420  cd 3D-UNet/
+ 1421  ls
+ 1422  gedit README.md 
+ 1423  ls
+ 1424  gedit config.py 
+ 1425  python train.py 
+ 1426  conda deactivate
+ 1427  conda list --env
+ 1428  conda info --env
+ 1429  conda activate tf_gpu4_env
+ 1430  python train.py 
+ 1431  conda env create -f environment.yml
+ 1432  conda env export > environment.yml
+ 1433  conda deactivate
+ 1434  conda env create -n torch -f environment.yml 
+ 1435  gedit environment.yml 
+ 1436  conda info --env
+ 1437  conda remove torch
+ 1438  conda env create -n torch -f environment.yml 
+ 1439  rm -rf /rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/envs/torch
+ 1440  conda env create -n torch -f environment.yml 
+ 1441  cd /rsrch1/ip/rglenn1/segLiverWkspce/docker_mist/latest_MIST
+ 1442  gedit ../../../.bashrc_gpu4_rmg 
+ 1443  source ../../../.bashrc_
+ 1444  source ../../../.bashrc_gpu4_rmg 
+ 1445  conda activate tf_gpu4_env3_8
+ 1446  conda install -c nvidia/label/cuda-11.6.0 cuda-nvcc
+ 1447  ls
+ 1448  cd /rsrch1/ip/rglenn1/segLiverWkspce/docker_mist/latest_MIST
+ 1449  ls
+ 1450  sourec ../../../.bashrc_gpu4_rmg 
+ 1451  source ../../../.bashrc_gpu4_rmg 
+ 1452  conda activate tf_gpu4_env
+ 1453  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 125
+ 1454  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 128 128 16 --epochs 125
+ 1455  python 
+ 1456  conda install tensorflow-gpu~=2.4
+ 1457  python 
+ 1458  conda deactivate 
+ 1459  conda create -n tf_gpu4_env3_8 python==3.8
+ 1460  pwd
+ 1461  nvidia-smi
+ 1462  top
+ 1463  module load tigervnc
+ 1464  vncserver list
+ 1465  vncserver -list
+ 1466  vncserver -kill :1
+ 1467  vncserver -list
+ 1468  vncserver -geometry 1920x1080
+ 1469  vncserver -list
+ 1470  vncserver -kill :1
+ 1471  vncserver -geometry 1920x1080
+ 1472  cd ..
+ 1473  cd ../data
+ 1474  ls
+ 1475  cd PA14-0646/
+ 1476  ls
+ 1477  cd results/
+ 1478  ls
+ 1479  cat train_paths.csv 
+ 1480  pwd
+ 1481  ls /rsrch1/ip/rglenn1/data/PA14-0646/results/train_paths.csv 
+ 1482  source ../../../.bashrc_gpu4_rmg 
+ 1483  conda activate tf_gpu4_env
+ 1484  conda env create -f ../../../segLiverWkspce/docker_mist/latest_MIST/environment.yml
+ 1485  conda env export >  ../../../segLiverWkspce/docker_mist/latest_MIST/environment.yml
+ 1486  conda deactivate
+ 1487  cd /rsrch1/ip/rglenn1/segLiverWkspce/docker_mist/latest_MIST
+ 1488  ls
+ 1489  source ../../../.bashrc_gpu4_rmg 
+ 1490  conda activate tf_gpu4_env3_8
+ 1491  nvcc --v
+ 1492  nvcc -v
+ 1493  nvcc -version
+ 1494  nvcc --version
+ 1495  conda install -c "nvidia/label/cuda-11.6.0" cuda-runtime
+ 1496  conda install -c conda-forge tensorflow==2.8
+ 1497  python
+ 1498  asdfasdf
+ 1499  gedit ../../../.bashrc_gpu4_rmg 
+ 1500  gedit ../../../.bashrc_gpu4_rmg  &
+ 1501  #export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/envs/tf_gpu_env/lib/:/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/envs/tf_gpu4_env/lib/python3.8/site-packages/nvidia/dali/:/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/envs/tf_gpu4_env/lib/python3.8/site-packages/tensorflow/
+ 1502  export TF_CPP_MIN_LOG_LEVEL="2"
+ 1503  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/envs/tf_gpu4_env3_8/lib/:/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/envs/tf_gpu4_env3_8/lib/python3.8/site-packages/nvidia/dali/:/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/envs/tf_gpu4_env3_8/lib/python3.8/site-packages/tensorflow/
+ 1504  python
+ 1505  find /rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/envs/tf_gpu4_env3_8/  -iname "libstdc++.so.6"
+ 1506  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/envs/tf_gpu4_env3_8/
+ 1507  python
+ 1508  conda install -c conda-forge gcc=12.1.0
+ 1509  python
+ 1510  pip install antspyx
+ 1511  conda uninstall protobuf
+ 1512  conda install protobuf
+ 1513  pip3 install --extra-index-url https://developer.download.nvidia.com/compute/redist --upgrade nvidia-dali-cuda110
+ 1514  pip3 install --upgrade --force-reinstall  --extra-index-url https://developer.download.nvidia.com/compute/redist --upgrade nvidia-dali-tf-plugin-cuda110
+ 1515  pip3 uninstall tensorflow
+ 1516  pip3 install tensorflow-gpu~=2.8
+ 1517  pip3 install tensorflow~=2.8
+ 1518  pip3 install tensorflow=2.8
+ 1519  pip3 install tensorflow=2.6
+ 1520  pip3 install tensorflow==2.8
+ 1521  python
+ 1522  pip3 install --upgrade --force-reinstall  --extra-index-url https://developer.download.nvidia.com/compute/redist --upgrade nvidia-dali-tf-plugin-cuda110
+ 1523  nvcc --version
+ 1524  pip install --extra-index-url https://developer.download.nvidia.com/compute/redist --upgrade nvidia-dali-tf-plugin-cuda110
+ 1525  conda install -c "nvidia/label/cuda-11.6.0" cuda-runtime
+ 1526  nvcc --version
+ 1527  conda install -c "nvidia/label/cuda-11.6.0" cuda-runtime
+ 1528  export C_INCLUDE_PATH=/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/pkgs/libprotobuf-3.21.12-h3eb15da_0/include/::/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/pkgs/cuda-nvcc-11.6.55-h5758ece_0/include/:/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/pkgs/cuda-cudart-11.3.58-hc1aae59_0/include/:$C_INCLUDE_PATH
+ 1529  export CPLUS_INCLUDE_PATH=/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/pkgs/libprotobuf-3.21.12-h3eb15da_0/include/::/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/pkgs/cuda-nvcc-11.6.55-h5758ece_0/include/:/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/pkgs/cuda-cudart-11.3.58-hc1aae59_0/include/:$CPLUS_INCLUDE_PATH
+ 1530  pip install --extra-index-url https://developer.download.nvidia.com/compute/redist --upgrade nvidia-dali-tf-plugin-cuda110
+ 1531  gedit ../../../.bashrc_gpu4_rmg 
+ 1532  pip3 install psutil scipy pandas tqdm readchar matplotlib pynvml scikit-learn pydot typeguard
+ 1533  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 125
+ 1534  conda install -c conda-forge tensorflow-gpu==2.8
+ 1535  conda install -c conda-forge tensorflow==2.10
+ 1536  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 125
+ 1537  c++filt _ZNK10tensorflow8OpKernel11TraceStringERKNS_15OpKernelContextEb
+ 1538  pip3 install --extra-index-url https://developer.download.nvidia.com/compute/redist --upgrade nvidia-dali-cuda110
+ 1539  pip3 install --upgrade --force-reinstall   --extra-index-url https://developer.download.nvidia.com/compute/redist --upgrade nvidia-dali-cuda110
+ 1540  pip3 install --upgrade --force-reinstall  --extra-index-url https://developer.download.nvidia.com/compute/redist --upgrade nvidia-dali-tf-plugin-cuda110
+ 1541  pip3 uninstall protobuf
+ 1542  pipr install protobuf
+ 1543  pip3 install protobuf
+ 1544  pip3 install protobuf<3.20,>=3.9.2
+ 1545  pip3 install protobuf==3.9.2
+ 1546  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 125
+ 1547  python
+ 1548  pip install protobuf==3.19.1
+ 1549  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 125
+ 1550  from tensorflow.python.client import device_lib
+ 1551  python
+ 1552  nvcc --version
+ 1553  /rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/pkgs
+ 1554  ls /rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/pkgs
+ 1555  conda list | grep -i protobuf
+ 1556  conda install -c nvidia/label/cuda-11.3.0 cuda-nvcc
+ 1557  conda install -c "nvidia/label/cuda-11.3.0" cuda-runtime
+ 1558  ls /rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/pkgs/cudexport C_INCLUDE_PATH=/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/pkgs/ protobuf-3.19.4-py38h709712a_0/:/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/pkgs/cuda-nvcc-11.3.58-h2467b9f_0/include/:/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/pkgs/cuda-cudart-11.3.58-hc1aae59_0/include:$C_INCLUDE_PATH
+ 1559  export CPLUS_INCLUDE_PATH=/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/pkgs/ protobuf-3.19.4-py38h709712a_0/:/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/pkgs/cuda-nvcc-11.3.58-h2467b9f_0/include/:/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/pkgs/cuda-cudart-11.3.58-hc1aae59_0/include:$CPLUS_INCLUDE_PATH
+ 1560  pip3 install --upgrade --force-reinstall   --extra-index-url https://developer.download.nvidia.com/compute/redist --upgrade nvidia-dali-cuda110
+ 1561  pip3 install --upgrade --force-reinstall  --extra-index-url https://developer.download.nvidia.com/compute/redist --upgrade nvidia-dali-tf-plugin-cuda110
+ 1562  ls /rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/pkgs/cuda-cudart-11.3.58-hc1aae59_0/include
+ 1563  find /rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/pkgs/cuda-cudart-11.3.58-hc1aae59_0/ -iname cuda_runtime.h
+ 1564  export C_INCLUDE_PATH=/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/pkgs/ protobuf-3.19.4-py38h709712a_0/:/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/pkgs/cuda-nvcc-11.3.58-h2467b9f_0/include/:/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/pkgs/cuda-cudart-11.3.58-hc1aae59_0/include:$C_INCLUDE_PATH
+ 1565  export CPLUS_INCLUDE_PATH=/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/pkgs/ protobuf-3.19.4-py38h709712a_0/:/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/pkgs/cuda-nvcc-11.3.58-h2467b9f_0/include/:/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/pkgs/cuda-cudart-11.3.58-hc1aae59_0/include:$CPLUS_INCLUDE_PATH
+ 1566  pip3 install --upgrade --force-reinstall  --extra-index-url https://developer.download.nvidia.com/compute/redist --upgrade nvidia-dali-tf-plugin-cuda110
+ 1567  find /rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/pkgs/cuda-cudart-11.3.58-hc1aae59_0/ -iname cuda_runtime_api.h
+ 1568  export CPLUS_INCLUDE_PATH=/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/pkgs/cuda-cudart-11.3.58-hc1aae59_0/include/:$CPLUS_INCLUDE_PATH
+ 1569  export C_INCLUDE_PATH=/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/pkgs/cuda-cudart-11.3.58-hc1aae59_0/include/:$C_INCLUDE_PATH
+ 1570  pip3 install --upgrade --force-reinstall  --extra-index-url https://developer.download.nvidia.com/compute/redist --upgrade nvidia-dali-tf-plugin-cuda110
+ 1571  find /rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/pkgs/cuda-cudart-11.3.58-hc1aae59_0/ -iname host_defines.h
+ 1572  find /rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/pkgs/ -iname host_defines.h
+ 1573  export C_INCLUDE_PATH=/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/pkgs/cuda-cudart-11.3.58-hc1aae59_0/include/:/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/pkgs/cuda-nvcc-11.3.58-h2467b9f_0/include/:$C_INCLUDE_PATH
+ 1574  export CPLUS_INCLUDE_PATH=/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/pkgs/cuda-cudart-11.3.58-hc1aae59_0/include/:/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/pkgs/cuda-nvcc-11.3.58-h2467b9f_0/include/:$CPLUS_INCLUDE_PATH
+ 1575  pip3 install --upgrade --force-reinstall  --extra-index-url https://developer.download.nvidia.com/compute/redist --upgrade nvidia-dali-tf-plugin-cuda110
+ 1576  pip3 install protobuf==3.19
+ 1577  pip3 install --upgrade --force-reinstall  --extra-index-url https://developer.download.nvidia.com/compute/redist --upgrade nvidia-dali-tf-plugin-cuda110
+ 1578  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 125
+ 1579  python
+ 1580  nvidia-smi
+ 1581  import tensorflow as tf 
+ 1582  print(tf.config.list_physical_devices('GPU'))
+ 1583  python
+ 1584  which python
+ 1585  cd /rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/envs/tf_gpu4_env3_8/bin/python
+ 1586  cd /rsrch1/ip/rglenn1/support_packages/
+ 1587  ls
+ 1588  cd miniconda/
+ 1589  ls
+ 1590  cd ..
+ 1591  rm -rf miniconda
+ 1592  ls
+ 1593  d mi
+ 1594  ls
+ 1595  ls miniconda/
+ 1596  rm -rf miniconda
+ 1597  pwd
+ 1598  cd /rsrch1/ip/rglenn1/support_packages
+ 1599  rm -rf miniconda/
+ 1600  rm -rf miniconda
+ 1601  ls
+ 1602  ls cuda10_2/
+ 1603  ls
+ 1604  ls ..
+ 1605  nautilus .
+ 1606  chmod +x miniconda/Miniconda3-latest-Linux-x86_64\(1\).sh 
+ 1607  cd miniconda/
+ 1608  ./Miniconda3-latest-Linux-x86_64\(1\).sh 
+ 1609  gedit /home/rglenn1/.bashrc &
+ 1610  gedit ../../.bashrc_gpu4_rmg 
+ 1611  source ../../.bashrc_gpu4_rmg 
+ 1612  conda create --name tf_gpu4_env python=3.8
+ 1613  conda activate tf_gpu4_env
+ 1614  conda install -c nvidia/label/cuda-11.3.0 cuda-nvcc
+ 1615  nvcc --version
+ 1616  pip3 install tensorflow==2.10
+ 1617  pip3 install antspyx
+ 1618  pip3 install entrypoints,
+ 1619  pip3 install entrypoints
+ 1620  pip3 install entrypoints,y
+ 1621  ls /rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/envs/tf_gpu4_env//lib/
+ 1622  ls /rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/envs/tf_gpu4_env//lib/python3.8/site-packages/tensorflow
+ 1623  export LD_LIBRARY_PATH=/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/envs/tf_gpu4_env//lib/:/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/envs/tf_gpu4_env//lib/python3.8/site-packages/tensorflow:$LD_LIBARY_PATH
+ 1624  python
+ 1625  python -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"
+ 1626  python
+ 1627  pip3 reinstall tensorflow==2.10
+ 1628  pip3 install --force tensorflow==2.10
+ 1629  pip3 uninstall jupyter-lab
+ 1630  pip3 uninstall protbuf
+ 1631  pip3 uninstall prootbuf
+ 1632  pip3 install --force tensorflow==2.10
+ 1633  pip3 unistall pyzmq
+ 1634  pip3 uninstall pyzmq
+ 1635  pip3 uninstall tornado
+ 1636  pip3 uninstall traitlets
+ 1637  pip3 uninstall jupyter-client
+ 1638  pip3 uninstall google-auth
+ 1639  pip3 uninstall networkx
+ 1640  pip3 uninstall sympy
+ 1641  pip3 install --force tensorflow==2.10
+ 1642  \
+ 1643  source ../../../.b..
+ 1644  source ../../.bashrc_gpu4_rmg 
+ 1645  conda create -n tf-gpu tensorflow-gpu
+ 1646  conda activate tf-gpu 
+ 1647  python
+ 1648  export LD_LIBRARY_PATH=/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/envs/tf-gpu//lib/:/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/envs/tf-gpu//lib/python3.8/site-packages/tensorflow:$LD_LIBARY_PATH
+ 1649  python
+ 1650  ls /rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/envs/tf-gpu//lib/
+ 1651  export LD_LIBRARY_PATH=/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/envs/tf-gpu//lib/:/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/envs/tf-gpu//lib/python3.8/site-packages/tensorflow:$LD_LIBARY_PATH
+ 1652  python
+ 1653  nvcc --version
+ 1654  conda deactivate
+ 1655  conda remove --name tf-gpu --all
+ 1656  conda create -n tf-gpu tensorflow-gpu cuda-nvcc
+ 1657  conda create -n tf-gpu tensorflow-gpu -c nvidia/label/cuda-11.3.0 cuda-nvcc
+ 1658  conda create -n tf-gpu -c nvidia/label/cuda-11.3.0 cuda-nvcc tensorflow
+ 1659  conda activate tf-gpu 
+ 1660  export LD_LIBRARY_PATH=/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/envs/tf-gpu//lib/:/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/envs/tf-gpu//lib/python3.8/site-packages/tensorflow:$LD_LIBARY_PATH
+ 1661  python
+ 1662  nvcc --version
+ 1663  python
+ 1664  nvidia-smi
+ 1665  python --version
+ 1666  conda deactivate
+ 1667  conda remove --name tf-gpu --all
+ 1668  conda create -n tf-gpu python==3.8 -c nvidia/label/cuda-11.3.0 cuda-nvcc tensorflow
+ 1669  conda create -n tf-gpu -c nvidia/label/cuda-11.3.0 cuda-nvcc tensorflow python==3.8
+ 1670  conda activate tf-gpu 
+ 1671  export LD_LIBRARY_PATH=/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/envs/tf-gpu//lib/:/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/envs/tf-gpu//lib/python3.8/site-packages/tensorflow:$LD_LIBARY_PATH
+ 1672  python
+ 1673  ls /rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/envs/tf-gpu//lib/
+ 1674  export LD_LIBRARY_PATH=/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/envs/tf-gpu//lib/:/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/envs/tf-gpu//lib/python3.8/site-packages/tensorflow:$LD_LIBARY_PATH
+ 1675  python
+ 1676  pip3 list | grep -i numpy
+ 1677  pip install numpy==1.19
+ 1678  python
+ 1679  nvcc --version
+ 1680  module load tigervnc
+ 1681  vncserver -list
+ 1682  vncserver -kill :1
+ 1683  
+ 1684  vncserver -geometry 1920x1080
+ 1685  gedit ../../../.bashrc_gpu4_rmg 
+ 1686  grep -ir xla_gpu_cuda_data_dir
+ 1687  gedit main.py &
+ 1688  source ../../../.bashrc_gpu4_rmg 
+ 1689  conda activate tf-gpu
+ 1690  nvidia-smi
+ 1691  nvcc --version
+ 1692  gedit /rsrch1/ip/rglenn1/segLiverWkspce/docker_mist/latest_MIST/kFoldMetrics.py
+ 1693  gedit /rsrch1/ip/rglenn1/segLiverWkspce/docker_mist/latest_MIST/runtime/utils.py
+ 1694  gedit /rsrch1/ip/rglenn1/segLiverWkspce/docker_mist/latest_MIST/runtime/run.py
+ 1695  nautilus ../../../data/liver_33_patients/
+ 1696  gedit /rsrch1/ip/rglenn1/segLiverWkspce/docker_mist/latest_MIST/runtime/utils.py
+ 1697  gedit /rsrch1/ip/rglenn1/segLiverWkspce/docker_mist/latest_MIST/runtime/utils.py &
+ 1698  gedit /rsrch1/ip/rglenn1/segLiverWkspce/docker_mist/latest_MIST/runtime/run.py
+ 1699  nautilus ../../../data/liver_33_patients/
+ 1700  ps -ef|grep rglen|wc -l
+ 1701  ps -ef|grep raji |wc -l
+ 1702  gedit main.py 
+ 1703  cd /rsrch1/ip/rglenn1/
+ 1704  source .bashrc_gpu4_rmg 
+ 1705  conda activate tf-gpu
+ 1706  nvcc --version
+ 1707  python 
+ 1708  pip deactivate
+ 1709  conda deactivate
+ 1710  conda remove --name tf-gpu --all
+ 1711  conda create --name tf-gpu python=3.9
+ 1712  conda activate tf-gpu
+ 1713  conda install -c conda-forge cudatoolkit=11.8.0
+ 1714  conda install -c nvidia/label/cuda-11.3.0 cuda-nvcc
+ 1715  nvcc --version
+ 1716  CUDNN_PATH=$(dirname $(python -c "import nvidia.cudnn;print(nvidia.cudnn.__file__)"))
+ 1717  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CONDA_PREFIX/lib/:$CUDNN_PATH/lib
+ 1718  CUDNN_PATH=$(dirname $(python -c "import nvidia.cudnn;print(nvidia.cudnn.__file__)"))
+ 1719  conda install -c nvidia/label/cuda-11.3.0 cuda-nvcc
+ 1720  pip install nvidia-cudnn-cu11==8.6.0.163
+ 1721  mkdir -p $CONDA_PREFIX/etc/conda/activate.d
+ 1722  echo 'CUDNN_PATH=$(dirname $(python -c "import nvidia.cudnn;print(nvidia.cudnn.__file__)"))' >> $CONDA_PREFIX/etc/conda/activate.d/env_vars.sh
+ 1723  echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CONDA_PREFIX/lib/:$CUDNN_PATH/lib' >> $CONDA_PREFIX/etc/conda/activate.d/env_vars.sh
+ 1724  CUDNN_PATH=$(dirname $(python -c "import nvidia.cudnn;print(nvidia.cudnn.__file__)"))
+ 1725  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CONDA_PREFIX/lib/:$CUDNN_PATH/lib
+ 1726  pip install --upgrade pip
+ 1727  pip install tensorflow==2.12
+ 1728  python
+ 1729  nvcc --version
+ 1730  pip3 install --extra-index-url https://developer.download.nvidia.com/compute/redist --upgrade nvidia-dali-cuda110
+ 1731  pip3 install --extra-index-url https://developer.download.nvidia.com/compute/redist --upgrade nvidia-dali-tf-plugin-cuda110
+ 1732  cd /rsrch1/ip/rglenn1/segLiverWkspce/docker_mist/latest_MIST
+ 1733  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/PA14-0646/dataset.json  --results /rsrch1/ip/rglenn1/data/PA14-0646/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 125
+ 1734  pip3 install antspyx
+ 1735  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/PA14-0646/dataset.json  --results /rsrch1/ip/rglenn1/data/PA14-0646/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 125
+ 1736  pip3 install tqdm
+ 1737  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/PA14-0646/dataset.json  --results /rsrch1/ip/rglenn1/data/PA14-0646/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 125
+ 1738  pip3 install SimpleITK tqdm psutil tensorflow_addons
+ 1739  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/PA14-0646/dataset.json  --results /rsrch1/ip/rglenn1/data/PA14-0646/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 125
+ 1740  gedit ../../../.bashrc
+ 1741  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/PA14-0646/dataset.json  --results /rsrch1/ip/rglenn1/data/PA14-0646/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 125
+ 1742  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/PA14-0646/dataset.json  --results /rsrch1/ip/rglenn1/data/PA14-0646/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1743  grep -ir depth
+ 1744  clear
+ 1745  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/PA14-0646/dataset.json  --results /rsrch1/ip/rglenn1/data/PA14-0646/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1746  pip install nvidia-cudnn-cu11==8.9
+ 1747  pip install nvidia-cudnn-cu11==8.9.0.131
+ 1748  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/PA14-0646/dataset.json  --results /rsrch1/ip/rglenn1/data/PA14-0646/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1749  gedit /rsrch1/ip/rglenn1/segLiverWkspce/docker_mist/latest_MIST/kFoldMetrics.py
+ 1750  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/PA14-0646/dataset.json  --results /rsrch1/ip/rglenn1/data/PA14-0646/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1751  gedit /rsrch1/ip/rglenn1/segLiverWkspce/docker_mist/latest_MIST/runtime/utils.py
+ 1752  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/PA14-0646/dataset.json  --results /rsrch1/ip/rglenn1/data/PA14-0646/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1753  gedit /rsrch1/ip/rglenn1/segLiverWkspce/docker_mist/latest_MIST/runtime/run.py
+ 1754  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/PA14-0646/dataset.json  --results /rsrch1/ip/rglenn1/data/PA14-0646/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1755  python main.py --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 125
+ 1756  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/PA14-0646/dataset.json  --results /rsrch1/ip/rglenn1/data/PA14-0646/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1757  python main.py  --data /rsrch1/ip/rglenn1/data/PA14-0646/dataset.json  --results /rsrch1/ip/rglenn1/data/PA14-0646/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1758  python main.py --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 125
+ 1759  ls/rsrch1/ip/rglenn1/segLiverWkspce/docker_mist/latest_MIST/numpy/images
+ 1760  ls /rsrch1/ip/rglenn1/segLiverWkspce/docker_mist/latest_MIST/numpy/images
+ 1761  git status
+ 1762  module load tigervnc
+ 1763  vnserver -list
+ 1764  vncserver -list
+ 1765  vncserver -kill :1
+ 1766  vncserver -geometry 1920x1080
+ 1767  ps -ef|grep rglen|wc -l
+ 1768  kill -15 -1
+ 1769  module load tigervnc
+ 1770  vncserver -geometry 1920x1080
+ 1771  gedit /rsrch1/ip/rglenn1/segLiverWkspce/docker_mist/test_MIST/postprocess_preds/postprocess.py
+ 1772  gedit gedit data_loading/dali_loader.py 
+ 1773  gedit data_loading/dali_loader.py 
+ 1774  gedit preprocess_data/preprocess.py 
+ 1775  gedit ../test_MIST/preprocess_data/preprocess.py 
+ 1776  gedit runtime/run.py 
+ 1777  top
+ 1778  nfsiostat 
+ 1779  ps -ef|grep rglen|wc -l
+ 1780  cd /rsrch1/ip/rglenn1/segLiverWkspce/docker_mist/latest_MIST
+ 1781  source ../../../.bashrc_gpu4_rmg 
+ 1782  history | grep -i activate
+ 1783  conda activate tf-gpu
+ 1784  ls/rsrch1/ip/rglenn1/segLiverWkspce/docker_mist/latest_MIST/numpy/images
+ 1785  ls/rsrch1/ip /rglenn1/segLiverWkspce/docker_mist/latest_MIST/numpy/images
+ 1786  ls /rsrch1/ip /rglenn1/segLiverWkspce/docker_mist/latest_MIST/numpy/images
+ 1787  ls /rsrch1/ip/rglenn1/segLiverWkspce/docker_mist/latest_MIST/numpy/images
+ 1788  python main.py --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1789  grep -ir numpy
+ 1790  python main.py --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1791  grep -ir "train_paths" .
+ 1792  gedit ./analyze_data/analyze.py
+ 1793  nautilus /rsrch1/ip/rglenn1/segLiverWkspce/docker_mist/latest_MIST/numpy/images &
+ 1794  gedit preprocess_data/preprocess.py &
+ 1795  gedit main.py 
+ 1796  gedit preprocess_data/preprocess.py &ge
+ 1797  cd /rsrch1/ip/rglenn1/segLiverWkspce/docker_mist/latest_MIST
+ 1798  python main.py --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1799  source ../../../.bashrc_
+ 1800  source ../../../.bashrc_gpu4_rmg 
+ 1801  conda activate tf-gpu
+ 1802  python main.py --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1803  ls /rsrch1/ip/rglenn1/data/liver_33_patients/Processed
+ 1804  python main.py --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1805  python main.py --exec-mode --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1806  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1807  ls /rsrch1/ip/rglenn1/data/liver_33_patients/results/models/best/vf_best_model_split_0/
+ 1808  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1809  ls /rsrch1/ip/rglenn1/data/liver_33_patients/results/models/best/vf_best_model_split_0/
+ 1810  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1811  ls /rsrch1/ip/rglenn1/data/liver_33_patients/results/models/best/vf_best_model_split_0/
+ 1812  ls /rsrch1/ip/rglenn1/data/liver_33_patients/results/models/best/vf_best_model_split_0/best
+ 1813  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1814  ls /rsrch1/ip/rglenn1/data/liver_33_patients/results/predictions/train/raw/pred_temp.nii.gz
+ 1815  ls /rsrch1/ip/rglenn1/data/liver_33_patients/results/predictions/train/raw/
+ 1816  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1817  ls /rsrch1/ip/rglenn1/data/liver_33_patients/results/models/best/vf_best_model_split_1/best/
+ 1818  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1819  ls /rsrch1/ip/rglenn1/data/liver_33_patients/results/models/best/vf_best_model_split_0
+ 1820  ls /rsrch1/ip/rglenn1/data/liver_33_patients/results/models/best/vf_best_model_split_1/best/
+ 1821  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1822  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 10
+ 1823  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1824  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 125
+ 1825  python
+ 1826  pip3 install tensorflow==2.4
+ 1827  pip3 install tensorflow==2.8.1
+ 1828  pip3 install tensorflow==2.10.1
+ 1829  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1830  cd ..
+ 1831  ls
+ 1832  git clone https://github.com/aecelaya/MIST test_MIST
+ 1833  cd test_MIST/
+ 1834  pip3 install pandas==
+ 1835  cd ..
+ 1836  cd latest_MIST/
+ 1837  ls
+ 1838  gedit requirements_rg.txt 
+ 1839  pip3 install pandas=1.4.2
+ 1840  pip3 install pandas==1.4.2
+ 1841  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1842  python main.py  --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1843  cd ../test_MIST/
+ 1844  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1845  cd ..
+ 1846  rm -rf test_MIST
+ 1847  cd test_MIST/
+ 1848  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1849  ls
+ 1850  git checkout no_tf_records
+ 1851  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1852  ls 
+ 1853  gedit runtime/run.py 
+ 1854  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1855  python main.py --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1856  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1857  python main.py --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1858  nvidia-smi
+ 1859  python main.py --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1860  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1861  python --version
+ 1862  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1863  python main.py --data /rsrch1/ip/rglenn1/data/subset_VF_dataset/dataset.json --processed-data /rsrch1/ip/rglenn1/data/subset_VF_dataset/numpy --results /rsrch1/ip/rglenn1/data/subset_VF_dataset/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 125 
+ 1864  python main.py --data /rsrch1/ip/rglenn1/data/subset_VF_dataset/dataset.json --processed-data /rsrch1/ip/rglenn1/data/subset_VF_dataset/numpy --results /rsrch1/ip/rglenn1/data/subset_VF_dataset/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1865  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/subset_VF_dataset/dataset.json --processed-data /rsrch1/ip/rglenn1/data/subset_VF_dataset/numpy --results /rsrch1/ip/rglenn1/data/subset_VF_dataset/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1866  grep -i ".csv" .
+ 1867  grep -ir "csv" .
+ 1868  gedit /rsrch1/ip/rglenn1/segLiverWkspce/docker_mist/test_MIST/postprocess_preds/postprocess.py
+ 1869  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/subset_VF_dataset/dataset.json --processed-data /rsrch1/ip/rglenn1/data/subset_VF_dataset/numpy --results /rsrch1/ip/rglenn1/data/subset_VF_dataset/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1870  python main.py  --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1871  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/subset_VF_dataset/dataset.json --processed-data /rsrch1/ip/rglenn1/data/subset_VF_dataset/numpy --results /rsrch1/ip/rglenn1/data/subset_VF_dataset/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1872  gedit data_loading/dali_loader.py 
+ 1873  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/subset_VF_dataset/dataset.json --processed-data /rsrch1/ip/rglenn1/data/subset_VF_dataset/numpy --results /rsrch1/ip/rglenn1/data/subset_VF_dataset/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1874  python main.py  --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1875  python main.py  --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 125
+ 1876  python main.py  --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1877  history >& install_tf-gpu.txt
+ 1878  cd /rsrch1/ip/rglenn1/segLiverWkspce/docker_mist/test_MIST
+ 1879  gedit analyze_data/analyze.py 
+ 1880  gedit runtime/utils.py 
+ 1881  gedit runtime/run.py 
+ 1882  gedit /rsrch1/ip/rglenn1/segLiverWkspce/docker_mist/latest_MIST/runtime/checkpoints.py
+ 1883  gedit /rsrch1/ip/rglenn1/segLiverWkspce/docker_mist/latest_MIST/kFoldMetrics.py
+ 1884  gedit /rsrch1/ip/rglenn1/segLiverWkspce/docker_mist/latest_MIST/inference/sliding_window.py
+ 1885  cd ..
+ 1886  git clone https://github.com/aecelaya/MIST test_MIST
+ 1887  pip3 list | grep -i pandas
+ 1888  pip3 install pandas==0.23
+ 1889  cd latest_MIST/
+ 1890  gedit requirements_rg.txt 
+ 1891  pip3 install pandas==1.42
+ 1892  pip3 install pandas==1.4.2
+ 1893  cd ../test_MIST/
+ 1894  cd ..
+ 1895  ls
+ 1896  git clone https://github.com/rachelglenn/MIST test_MIST
+ 1897  cd test_MIST/
+ 1898  gedit runtime/run.py 
+ 1899  source ../../../.bashrc_gpu4_rmg 
+ 1900  conda create --name tf-gpu4 python=3.8
+ 1901  conda activate tf-gpu4
+ 1902  conda install -c conda-forge cudatoolkit=11.4
+ 1903  pip install nvidia-cudnn-cu11==8.1
+ 1904  pip install nvidia-cudnn-cu11~=8.1
+ 1905  pip install nvidia-cudnn-cu11==8.5.0.96
+ 1906  CUDNN_PATH=$(dirname $(python -c "import nvidia.cudnn;print(nvidia.cudnn.__file__)"))
+ 1907  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CONDA_PREFIX/lib/:$CUDNN_PATH/lib
+ 1908  mkdir -p $CONDA_PREFIX/etc/conda/activate.d
+ 1909  echo 'CUDNN_PATH=$(dirname $(python -c "import nvidia.cudnn;print(nvidia.cudnn.__file__)"))' >> $CONDA_PREFIX/etc/conda/activate.d/env_vars.sh
+ 1910  echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CONDA_PREFIX/lib/:$CUDNN_PATH/lib' >> $CONDA_PREFIX/etc/conda/activate.d/env_vars.sh
+ 1911  pip install tensorflow==2.10
+ 1912  pip install tensorflow==2.11
+ 1913  python main.py --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1914  pip3 list | grep -i numpy
+ 1915  pip3 install numpy=1.19
+ 1916  pip3 install numpy==1.19
+ 1917  pip install tensorflow==2.12
+ 1918  pip install tensorflow-gpu==2.8
+ 1919  pip3 remove tensorflow==2.12
+ 1920  pip3 uninstall tensorflow==2.12
+ 1921  python main.py --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1922  pip install tensorflow-gpu==2.8
+ 1923  python3 -c "import tensorflow as tf; print(tf.reduce_sum(tf.random.normal([1000, 1000])))"
+ 1924  python
+ 1925  python3 -c "import tensorflow as tf; print(tf.config.list_physical_devices('GPU'))"
+ 1926  import tensorflow as tf 
+ 1927  if tf.test.gpu_device_name(): 
+ 1928  else:
+ 1929  python
+ 1930  cd ../latest_MIST/
+ 1931  pip install nvidia-cudnn-cu11~=8.1
+ 1932  pip install keras
+ 1933  python main.py --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1934  pip uninstall nvidia-cudnn-cu11
+ 1935  pip uninstall -c conda-forge cudatoolkit
+ 1936  pip uninstall cudatoolkit
+ 1937  pip uninstall nvidia-cudnn-cu11==2022.5.19
+ 1938  pip install nvidia-cudnn-cu11==2022.5.19
+ 1939  pip3 install cuda-runtime
+ 1940  conda install -c conda-forge cudatoolkit=11.3
+ 1941  conda install -c conda-forge cudatoolkit=11.7
+ 1942  nvcc --version
+ 1943  conda install -c nvidia/label/cuda-11.7.0 cuda-nvcc
+ 1944  python main.py --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1945  nvcc --version
+ 1946  pip3 --list 
+ 1947  pip3 list
+ 1948  pip3 uninstall tensorflow==2.8
+ 1949  pip3 uninstall tensorflow-gpu==2.8
+ 1950  pip3 list
+ 1951  pip3 uninstall tensorflow==2.11.0
+ 1952  pip3 install tensorflow==2.11.0
+ 1953  -\\\\\\\\\\\\\\\\\\\\\
+ 1954  python main.py --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1955  pip3 install numpy==1.21
+ 1956  pip3 install pyyaml
+ 1957  python main.py --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1958  pip3 install --extra-index-url https://developer.download.nvidia.com/compute/redist --upgrade nvidia-dali-cuda110
+ 1959  CUDNN_PATH=$(dirname $(python -c "import nvidia.cudnn;print(nvidia.cudnn.__file__)"))3
+ 1960  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CONDA_PREFIX/lib/:$CUDNN_PATH/lib
+ 1961  pip3 install --extra-index-url https://developer.download.nvidia.com/compute/redist --upgrade nvidia-dali-tf-plugin-cuda110
+ 1962  python main.py --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1963  pip3 install antspyx
+ 1964  python main.py --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1965  pip3 install tdqm
+ 1966  python main.py --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1967  pip3 install SimpleITK tqdm psutil tensorflow_addons
+ 1968  pip install antspyx
+ 1969  python main.py --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1970  pip install ants
+ 1971  python main.py --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1972  pip install --force antspyx
+ 1973  ,
+ 1974  python main.py --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1975  grep -ir 'np.str'
+ 1976  python main.py --exec-mode train --data /rsrch1/ip/rglenn1/data/liver_33_patients/dataset.json  --results /rsrch1/ip/rglenn1/data/liver_33_patients/results --model nnunet --pocket --xla --amp --patch-size 256 256 32 --epochs 1
+ 1977  pip3 list | grep -i tensorflow
+ 1978  pip install --force tensorflow==2.11
+ 1979  pip3 uninstall tensorflow-quantumnbconvert jupyterlab jupyter-server jupyter-events ipython ipykernel ipykernel cirq-core tensorflow-quantum google-api-core cirq-core
+ 1980  pip install --force tensorflow==2.11
+ 1981  pip3 install --upgrade pip
+ 1982  pip install --force tensorflow==2.11
+ 1983  conda deactivate
+ 1984  conda remove -n ENV_NAME --all
+ 1985  conda remove -n tf-gpu4 --all
+ 1986  nvidia-smi
+ 1987  conda create --name tf-gpu4 python=3.8
+ 1988  conda activate tf-gpu4
+ 1989  conda install -c conda-forge cudatoolkit
+ 1990  conda install -c nvidia/label/cuda-11.3.0 cuda-nvcc
+ 1991  conda install -c "nvidia/label/cuda-11.3.0" cuda-runtime
+ 1992  pip3 install tensorflow-gpu==2.6
+ 1993  pip3 install antspyx tdqm 
+ 1994  gedit data_loading/dali_loader.py 
+ 1995  df -h
+ 1996  module load tigervnc
+ 1997  vncserver -list
+ 1998  vncserver -kill :1
+ 1999  vncserver -geometry 1920x1080
+ 2000  df -h
+ 2001  gedit /rsrch1/ip/rglenn1/data/liver_33_patients/results/results_post.csv
+ 2002  nautilus .
+ 2003  git status
+ 2004  git checkout -b fixed_rgb_grayscale
+ 2005  git add postprocess_preds/postprocess.py preprocess_data/preprocess.py runtime/run.py
+ 2006  history >& history_install_env.txt.

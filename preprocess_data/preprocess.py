@@ -111,7 +111,7 @@ def preprocess_example(config, image_list, mask):
             # Crop mask according to nonzero mask
             mask = ants.crop_image(mask, nzmask)
     test = mask.numpy()
-    print("Mask shape-------", test[2,2,2])
+    print("Mask shape-------", test.shape)
     images = list()
     for image_path in image_list:
         # Load image as ants image
@@ -137,7 +137,7 @@ def preprocess_example(config, image_list, mask):
 
         images.append(image)
         test = image.numpy()
-        print("Image shape-------", image_path, test[1,1,1])
+        print("Image shape-------", image_path, test.shape)
 
     # Get dims of images
     if training:
@@ -241,6 +241,18 @@ def preprocess_dataset(args):
                 print("class_weights non-zero", np.count_nonzero(label_mask))
 
         # Save image in npy format
+        print("save shape", image_npy.shape)
+        #gray = 0.2989 * r + 0.5870 * g + 0.1140 * b                
+        dims = image_npy.shape
+        #print("image size----->", image_npy, image.get_shape())
+        if dims[-1] > 1:
+          #(imageWidth, imageHeight, imageWidth) = image_npy.shape
+          #image_npy_gray = np.zeros_like(image_npy[...,1]
+          #for i in range(imageHeight):
+          #  for j in range(imageWidth):
+          image_npy = np.dot(image_npy[...,:3], [0.299, 0.587, 0.114])
+          image_npy = image_npy.reshape(dims[0], dims[1], dims[2], 1)
+        print("save shape", image_npy.shape)
         np.save(os.path.join(images_dir, '{}.npy'.format(patient['id'])), image_npy.astype(np.float32))
 
         # Save mask in npy format

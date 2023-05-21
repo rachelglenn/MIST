@@ -27,7 +27,7 @@ from runtime.utils import get_files_df, get_lr_schedule, get_optimizer, get_flip
     evaluate_prediction, compute_results_stats, init_results_df, set_seed, set_tf_flags, set_visible_devices, \
     set_memory_growth, set_amp, set_xla, get_test_df
 from data_loading.dali_loader import get_data_loader
-from kFoldMetrics import kFoldMetrics
+#from kFoldMetrics import kFoldMetrics
 
 class RunTime:
 
@@ -169,7 +169,7 @@ class RunTime:
                                            '{}_base_model_split'.format(self.data['task']))
         params['results_path'] = self.args.results
 
-        self.k_metrics = kFoldMetrics(params)
+        #self.k_metrics = kFoldMetrics(params)
 
         # Start training loop
         for fold in self.args.folds:
@@ -184,6 +184,7 @@ class RunTime:
                                                                                   random_state=self.args.seed)
 
             # Get DALI loaders
+            print("Batch_size", self.args.batch_size)
             train_loader = get_data_loader(imgs=train_images,
                                            lbls=train_labels,
                                            batch_size=self.args.batch_size,
@@ -283,10 +284,15 @@ class RunTime:
             current_epoch = 1
             local_step = 1
             for global_step, (image, mask) in enumerate(train_loader):
-                image = tf.image.rgb_to_grayscale(image)
-                mask = tf.image.rgb_to_grayscale(mask)
+                print("shape", tf.shape(image))
+                image = tf.reshape(image, tf.shape(image), name=None)
+                print("check mask", np.count_nonzero(mask))
                 print("image size----->", image.get_shape())
                 print("mask size----->", mask.get_shape())
+                #image = tf.image.rgb_to_grayscale(tf.constant(image), name = None)
+                print("RG removed line 286 and 290 in run.py")
+                #mask = tf.image.rgb_to_grayscale(mask) # pylint: disable=W0212
+
                 if global_step >= total_steps:
                     break
 
@@ -321,7 +327,7 @@ class RunTime:
             if self.args.optimizer == 'adam':
                 learning_rate = optimizer.learning_rate.numpy() # _decayed_lr(tf.float32)
             # End of epoch training for fold
-            self.k_metrics.on_epoch_end(patch_size, model, val_loader, val_images, val_loss, learning_rate)
+            #self.k_metrics.on_epoch_end(patch_size, model, val_loader, val_images, val_loss, learning_rate)
             # Save last model
             print('Training for fold {} complete...'.format(fold))
             print('saving model', best_model_path)
@@ -354,7 +360,7 @@ class RunTime:
 
             # print('Running inference on validation set...')
             self.predict_and_evaluate_val(best_model_path, test_df, test_loader)
-            self.k_metrics.on_kFold_end( model, test_df, test_loader)
+            #self.k_metrics.on_kFold_end( model, test_df, test_loader)
             
             
             K.clear_session()
@@ -363,7 +369,7 @@ class RunTime:
             gc.collect()
 
             # End of fold
-        self.k_metrics.on_training_end()
+        #self.k_metrics.on_training_end()
         K.clear_session()
         gc.collect()
         # End train function

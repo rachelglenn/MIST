@@ -87,7 +87,7 @@ class Postprocess:
         self.n_classes = len(self.data['labels'])
 
         # Get baseline score and source directory
-        self.best_results_df = pd.read_csv(os.path.join(self.args.results, 'results.csv'))
+        self.best_results_df = pd.read_csv(os.path.join(self.args.results, 'results_run.csv'))
         self.best_score = compute_results_score(self.best_results_df)
         self.source_dir = os.path.join(self.args.results, 'predictions', 'train', 'raw')
 
