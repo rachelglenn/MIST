@@ -68,6 +68,14 @@ def sliding_window_inference(
     strategy="overlap_inside",
     **kwargs,
 ):
+    #print("inputs", inputs.shape)
+    #print("roi_size", roi_size)
+    #print("sw_batch_size", sw_batch_size)
+    #print("overlap", overlap)
+    #print("blending_mode", blend_mode)
+    #print("sigma", sigma)
+    #print("strategy", strategy)
+    #print("_______________________________________________")
     """
     Sliding window inference based on implementation by monai library:
     https://docs.monai.io/en/latest/_modules/monai/inferers/utils.html#sliding_window_inference
@@ -112,6 +120,7 @@ def sliding_window_inference(
             intervals.append(interval if interval > 0 else 1)
 
     if strategy == "pad":
+        #print("padding----------------------------->")
         for i, (image_x, roi_x, interval) in enumerate(zip(image_size, roi_size, intervals)):
             if image_x % interval != roi_x % interval:
                 padding_size[i] += interval - (image_x - roi_x) % interval
@@ -130,18 +139,29 @@ def sliding_window_inference(
 
     window_slices = get_window_slices(image_size, roi_size, intervals, strategy)
     if dim == 3:
+        #print("window_slices option 1")
         window_slices = batch_window_slices(window_slices, batch_size, 1)
+        #print("check window_slices", window_slices)
+        sw_batch_size = 1
     else:
+        #print("window_slices option 2")
         window_slices = batch_window_slices(window_slices, batch_size, sw_batch_size)
         sw_batch_size = 1
+        #print("check window_slices", window_slices)
 
     for window_group_start in range(0, len(window_slices), sw_batch_size):
         slice_group = window_slices[window_group_start : window_group_start + sw_batch_size]
         windows = tf.stack([tf.slice(input_padded, begin=begin, size=size) for begin, size in slice_group])
+        #for begin, size in slice_group:
+        #  #print("size of slice group", begin, size)
         importance_map_part = importance_map[: windows.shape[0] * windows.shape[1]]
         
-        #print('importantshape', importance_map_part.shape)
-        #print('window', windows.shape)
+        #print('check importantshape', importance_map_part.shape)
+        #print('check window', windows.shape)
+        #print('check software batch size', sw_batch_size)
+        #print("check slice_group:", slice_group)
+        test = np.asarray([tf.slice(input_padded, begin=begin, size=size) for begin, size in slice_group])
+        #print("window", test.shape)
         preds = run_model(model, windows, importance_map_part, windows.shape[0], **kwargs)
         preds = tf.unstack(preds, axis=0)
         for s, pred in zip(slice_group, preds):

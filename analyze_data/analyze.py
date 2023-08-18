@@ -83,7 +83,8 @@ class Analyze:
         else:
             use_nz_mask = False
         
-        #use_nz_mask = False #RG have had issues with use_nz_mask
+        use_nz_mask = False #RG have had issues with use_nz_mask
+        print("RG have had issues with use_nz_mask, removed in analyze line 87")
 
         return use_nz_mask
 
@@ -234,7 +235,8 @@ class Analyze:
         Analyze dataset to get inferred parameters.
         """
         # Start getting parameters from dataset
-        use_nz_mask = self.check_nz_mask()
+        use_nz_mask = False #self.check_nz_mask()
+        print("RG removed check for nz_mask in analyze_dataset, gave issues with ants.crop")
         target_spacing, self.is_anisotropic = self.get_target_spacing()
 
         if self.data['modality'] == 'ct':

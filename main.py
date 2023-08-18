@@ -75,7 +75,10 @@ def main(args):
 if __name__ == "__main__":
     args = get_main_args()
 
-    aPath = '--xla_gpu_cuda_data_dir=/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/pkgs/cuda-nvcc-11.7.64-0'
+    #aPath = '--xla_gpu_cuda_data_dir=/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/pkgs/cuda-nvcc-11.7.64-0'
+    aPath = '--xla_gpu_cuda_data_dir=/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/envs/my_tf-gpu/lib/' # '/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/envs/tf-gpu/nvvm/libdevice/'
+    aPath = '--xla_gpu_cuda_data_dir=/rsrch1/ip/rglenn1/support_packages/miniconda/conda_gpu4/envs/my_tf-gpu/' #/nvvm/libdevice/'
+
     #print(aPath)
     os.environ['XLA_FLAGS'] = aPath
     main(args)

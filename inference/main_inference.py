@@ -154,8 +154,17 @@ def load_test_time_models(models_dir, fast):
 
     if fast:
         model_list = [model_list[0]]
+    #model_path = "/rsrch1/ip/rglenn1/data/PA14-0646/results/models/best/vf_best_model_split_4/"
+    print("check model", models_dir)
+    #models = [load_model(os.path.join(models_dir, model), compile=False) for model in model_list]
+    
+    cuurent_dir = os.getcwd()
+    os.chdir(models_dir)
+    #last_model.save("nnunet_33_patients")
 
-    models = [load_model(os.path.join(models_dir, model), compile=False) for model in model_list]
+    
+    models = [load_model(".")]
+    os.chdir(cuurent_dir)
     return models
 
 
@@ -192,6 +201,7 @@ def test_time_inference(df, dest, config_file, models, overlap, blend_mode, tta)
 
     for ii in trange(len(df)):
         patient = df.iloc[ii].to_dict()
+        print("check patient", patient)
         image_list = list(patient.values())[1:]
         original_image = ants.image_read(image_list[0])
 
@@ -208,21 +218,24 @@ def test_time_inference(df, dest, config_file, models, overlap, blend_mode, tta)
                                             tta)
 
         # Apply postprocessing if called for in config file
-        # Apply morphological cleanup to nonzero mask
-        if config['cleanup_mask']:
-            prediction = apply_clean_mask(prediction, original_image, majority_label)
+        # Apply morphological cleanup to nonzero mask'
+        print("RG removed cleanup_mask and postprocess_lables from main_inference")
+        #if config['cleanup_mask']:
+        #    prediction = apply_clean_mask(prediction, original_image, majority_label)
 
         # Apply results of connected components analysis
-        if len(config['postprocess_labels']) > 0:
-            for label in config['postprocess_labels']:
-                prediction = apply_largest_component(prediction,
-                                                     original_image,
-                                                     label,
-                                                     majority_label)
+        #if len(config['postprocess_labels']) > 0:
+        #    for label in config['postprocess_labels']:
+        #        prediction = apply_largest_component(prediction,
+        #                                             original_image,
+        #                                             label,
+        #                                             majority_label)
 
         # Write prediction mask to nifti file and save to disk
         prediction_filename = '{}.nii.gz'.format(patient['id'])
+        #print("saving predicted image", output)
         output = os.path.join(dest, prediction_filename)
+        print("saving predicted image", output)
         ants.image_write(prediction, output)
 
         # Clean up

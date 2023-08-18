@@ -89,29 +89,30 @@ def preprocess_example(config, image_list, mask):
     if mask is None:
         training = False
 
-    if training:
+    if training: # RG removed this line
         # Reorient mask to RAI if not already in RAI
         mask = ants.reorient_image2(mask, "RAI")
         mask.set_direction(np.eye(3))
 
         # Resample mask to target spacing if dataset is anisotropic
+        print("check target_spacing", config['target_spacing'])
         if not(np.array_equal(np.array(mask.spacing), np.array(config['target_spacing']))):
-            mask = ants.resample_image(mask,
-                                       resample_params=config['target_spacing'],
+           mask = ants.resample_image(mask,
+                                       resample_params=np.array(config['target_spacing']),
                                        use_voxels=False,
-                                       interp_type=1)
+                                       interp_type=0)
 
     if config['use_nz_mask']:
         # Create non-zero mask from first image in image list
         nzmask = ants.image_read(image_list[0])
         print("image", image_list[0])
         nzmask = ants.get_mask(nzmask, cleanup=0)
-  
+        print("Check nzmask", nzmask.numpy().shape)
         if training:
             # Crop mask according to nonzero mask
             mask = ants.crop_image(mask, nzmask)
-    test = mask.numpy()
-    print("Mask shape-------", test.shape)
+    #test = mask.numpy()
+    #print("Mask shape-------", test.shape)
     images = list()
     for image_path in image_list:
         # Load image as ants image
@@ -123,24 +124,36 @@ def preprocess_example(config, image_list, mask):
         # Reorient image to RAI if not already in RAI
         image = ants.reorient_image2(image, "RAI")
         image.set_direction(np.eye(3))
+        print("Image shape before-------", image.numpy().shape)
 
         # Resample image to target spacing using spline interpolation
         if not(np.array_equal(np.array(image.spacing), np.array(config['target_spacing']))):
             image = ants.resample_image(image,
-                                        resample_params=config['target_spacing'],
+                                        resample_params=np.array(config['target_spacing']),
                                         use_voxels=False,
-                                        interp_type=4)
-
+                                        interp_type=0) # RG changed from 4 to 3
+            
+            #print("Mask shape-------", mask.numpy().shape)
+        print("Image shape after-------", image_path, image.numpy().shape)
         # If using non-zero mask, crop image according to non-zero mask
         if config['use_nz_mask']:
+            print("using nz_mask")
             image = ants.crop_image(image, nzmask)
 
         images.append(image)
         test = image.numpy()
-        print("Image shape-------", image_path, test.shape)
+        #if image.numpy().shape != mask.numpy().shape:
+        # image = image[mask.numpy().shape]
+        print("Image shape after-------", image_path, test.shape)
 
     # Get dims of images
     if training:
+        if not(np.array_equal(np.array(mask.spacing), np.array(config['target_spacing']))):
+            mask = ants.resample_image(mask,
+                                        resample_params=config['target_spacing'],
+                                        use_voxels=False,
+                                        interp_type=2) # RG changed from 4 to 3
+     
         mask_npy = mask.numpy()
         mask_npy = np.array(mask_npy/ np.amax(mask_npy),dtype=np.uint8)
         print("RG Line 141 in preprocess fixed bug", np.amax(mask_npy), np.amin(mask_npy))
@@ -151,9 +164,13 @@ def preprocess_example(config, image_list, mask):
 
 
     if training:
+        
+         
         mask_onehot = np.zeros((*dims, len(config['labels'])))
 
         for j in range(len(config['labels'])):
+            print("check j",  j)
+            print("check dims", *dims)
             mask_onehot[..., j] = (mask_npy == config['labels'][j]).astype('float32')
             print("mask non-zero",j,  np.count_nonzero((mask_npy == config['labels'][j]).astype('float32')))
     else:
@@ -200,6 +217,8 @@ def preprocess_dataset(args):
     create_empty_dir(labels_dir)
 
     # Get class weights if they exist
+    print("RG input class_weights manually")
+    args.class_weights = [0.001, 0.999]
     # Else we compute them
     if args.class_weights is None:
         class_weights = [0. for i in range(len(config['labels']))]
@@ -217,7 +236,7 @@ def preprocess_dataset(args):
         # Get list of image paths and segmentation mask
         image_list = list(patient.values())[2:len(patient)]
         mask = ants.image_read(patient['mask'])
-        print("Mask-----", patient['mask'])
+        print("Mask-----", patient['id'], patient['mask'])
         hinfo  = ants.image_header_info(patient['mask'])
         pclass = hinfo['pixelclass']
         print("pclass mask", pclass)
@@ -265,7 +284,7 @@ def preprocess_dataset(args):
     if compute_weights:
         print("config labels",config['labels'], patient)
         den = (1. / len(config['labels'])) * (np.sum(1. / np.array(class_weights)))
-        print("den:", den)
+        print("den:", den, "labes",config['labels'], "class weights", class_weights )
         class_weights = [(1. / class_weights[j]) / den for j in range(len(config['labels']))]
         max_weight = np.max(class_weights)
         class_weights = [weight / max_weight for weight in class_weights]

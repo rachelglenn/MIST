@@ -133,8 +133,8 @@ class Postprocess:
             # Get true mask and original_prediction
             patient_id = predictions[j].split('.')[0]
             raw_pred = ants.image_read(os.path.join(self.source_dir, predictions[j]))
-            #print('id', self.paths['id'])
-            #print('patient',  patient_id)
+            print('id', self.paths['id'])
+            print('patient',  patient_id)
             original_mask = ants.image_read(self.paths.loc[self.paths['id'].astype(str) == patient_id].iloc[0]['mask'])
 
             new_pred = apply_clean_mask(raw_pred, original_mask, self.majority_label)
