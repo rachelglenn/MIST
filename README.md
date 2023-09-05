@@ -142,7 +142,7 @@ cd MIST
 
 Next we use Dockerfile in this repository to build a Docker image named ```mist```.
 ```
-docker build -t mist .
+docker build -t mistrg .
 ```
 
 Once the container is ready, we launch an interactive session with the following command. Notice that we mount a directory to the ```/workspace``` directory in the container. The idea is to mount the local directory containing our data to the workspace directory. Please modify this command to match your system.
